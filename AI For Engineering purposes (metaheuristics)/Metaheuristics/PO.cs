@@ -26,7 +26,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
         private double[] upperBoundaries;
         private double[] lowerBoundaries;
         private Func<double[], double> f;
-
+        private double[,] args;
         //parametry algorytmu do "dostrojenia"
         double PF1, PF2, PF3, U, L, Alpha;
 
@@ -46,6 +46,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
             this.nDimensions = upperBoundaries.Length;
             this.xBest = new double[nDimensions];
             this.fBestHistory = new double[nIterations];
+
+            this.args = new double[population, nDimensions];
         }
 
         public string Name { get => name; set => name = value;}
@@ -55,7 +57,19 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 
         public double Solve()
         {
-            throw new NotImplementedException();
+            initializePopulation();
+            
+            return FBest;
+        }
+
+        private void initializePopulation()
+        {
+            Random random = new Random();
+            for(int i=0; i<population; i++)
+            {
+                for(int j=0; j<nDimensions; j++)
+                    args[i, j] = random.NextDouble() * (upperBoundaries[j] - lowerBoundaries[j]) + lowerBoundaries[j];
+            }
         }
     }
 }

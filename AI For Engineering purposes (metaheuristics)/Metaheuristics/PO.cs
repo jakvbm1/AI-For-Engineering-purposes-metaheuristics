@@ -55,6 +55,13 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
         public double FBest { get => fBest; set => fBest = value; }
         public int NumberOfEvaluationFitnessFunction { get => nOfCalls; set => nOfCalls = value; }
 
+        //jak chcecie wywolac funkcje to uzywajcie tego callFunction zeby automatycznie tez liczyc ilosc wywolan funkcji 
+        private double callFunction(double[] args)
+        {
+            nOfCalls++;
+            return f(args);
+        }
+
         public double Solve()
         {
             initializePopulation();
@@ -69,6 +76,26 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
             {
                 for(int j=0; j<nDimensions; j++)
                     args[i, j] = random.NextDouble() * (upperBoundaries[j] - lowerBoundaries[j]) + lowerBoundaries[j];
+            }
+        }
+
+        //czasem te przeksztalcenia z metaheurystyk lubia wywalac poza zakres przeszukiwany wiec proponuje by puszczac taka funkcje na koncu iteracji by poprawic takie przypadki
+        private void boundaryControl()
+        {
+            for(int i=0; i<population; i++)
+            {
+                for(int j = 0; j<nDimensions; j++)
+                {
+                    if (args[i,j] > upperBoundaries[j])
+                    {
+                        args[i, j] = upperBoundaries[j];
+                    }
+
+                    else if (args[i, j] < lowerBoundaries[j])
+                    {
+                        args[i, j] = lowerBoundaries[j];
+                    }
+                }
             }
         }
     }

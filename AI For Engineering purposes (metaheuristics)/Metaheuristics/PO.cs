@@ -11,9 +11,10 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
     {
 
         //zmienne pomocnicze do "nadzorowania pracy algorytmu
-        private string name = "Puma optimization";
+        private string name = "Puma Optimizer";
         private int nOfCalls = 0;
         private int evaluationTime = 0;
+        private int currentIteration = 0;
         private double[] fBestHistory; 
         private double fBest;
         private double[] xBest;
@@ -26,7 +27,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
         private double[] upperBoundaries;
         private double[] lowerBoundaries;
         private Func<double[], double> f;
-        private double[,] args;
+        private double[,] args; // tablica argumentow (w artykule Sol.X)
+        private double[] fit; // tablica wartosci (w artykule Sol.Cost)
+        private Random rnd = new Random();
         //parametry algorytmu do "dostrojenia"
         double PF1, PF2, PF3, U, L, Alpha;
 
@@ -55,6 +58,76 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
         public double FBest { get => fBest; set => fBest = value; }
         public int NumberOfEvaluationFitnessFunction { get => nOfCalls; set => nOfCalls = value; }
 
+        private void Exploitation()
+        {
+            for (int i = 0; i < population; i++)
+            { 
+                double[] beta = Randn(nDimensions);
+                double[] w = Randn(nDimensions); // eq 37
+                double[] v = Randn(nDimensions); // eq 38
+                double[] F1 = Randn(nDimensions);
+                double[] F2 = new double[nDimensions];
+                double R = 2 * rnd.NextDouble() - 1; // eq 34
+                double[] mBest = new double[nDimensions];
+                double[] S1 = Randn(nDimensions);
+                double rand9 = rnd.NextDouble() * 2 - 1;
+                double[] S2 = new double[nDimensions];
+                double[] Xattack = new double[nDimensions];
+                for (int j = 0; j < nDimensions; j++)
+                {
+                    F1[j] *= Math.Exp(2 - currentIteration * (2 / nIterations)); // eq 35
+                    F2[j] = w[j] * v[j] * v[j] * Math.Cos(2 * rnd.NextDouble() * w[j]); // eq 36
+                    var sum = 0.0;
+                    for (int k = 0; k < population; k++)
+                    {
+                        sum += args[k, j];
+                    }
+                    mBest[j] = (sum / population) / population;
+                    S1[j] += rand9;
+                    S2[j] = F1[j] * R * args[i, j] + F2[j] * (1 - R) * xBest[j];
+                    Xattack[j] = S2[j] / S1[j];
+                }
+
+                // eq 32
+                double[] newArgs = new double[nDimensions];
+                if (rnd.NextDouble() <= 0.5)
+                {
+                    if (rnd.NextDouble() <= L)
+                    {
+                        for (int j = 0; j < nDimensions; j++)
+                            newArgs[j] = xBest[j] + 2 * rnd.NextDouble() * Math.Exp(beta[j]) * (args[rnd.Next(population), j] - args[i, j]);
+                    }
+                    else
+                    {
+                        for (int j = 0; j < nDimensions; j++)
+                            newArgs[j] = 2 * rnd.NextDouble() * Xattack[j] - xBest[j];
+                    }
+                }
+                else
+                {
+                    int r1 = (int)Math.Round((population - 1) * rnd.NextDouble());
+                    for (int j = 0; j < nDimensions; j++)
+                        newArgs[j] = mBest[j] * args[r1, j] - Math.Pow(-1, rnd.Next(2) * args[i, j] / (1 + Alpha * rnd.NextDouble()));
+                }
+
+                boundaryControl(newArgs);
+
+                double newFit = callFunction(newArgs);
+
+                if (newFit < fit[i])
+                    fit[i] = newFit;
+            }
+        }
+
+        //Gaussian distribution
+        public double[] Randn(int dim)
+        {
+            Random rand = new Random();
+            return Enumerable.Range(0, dim).Select(_ =>
+                Math.Sqrt(-2.0 * Math.Log(rand.NextDouble())) * Math.Cos(2.0 * Math.PI * rand.NextDouble())
+            ).ToArray();
+        }
+
         //jak chcecie wywolac funkcje to uzywajcie tego callFunction zeby automatycznie tez liczyc ilosc wywolan funkcji 
         private double callFunction(double[] args)
         {
@@ -74,27 +147,29 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
             Random random = new Random();
             for(int i=0; i<population; i++)
             {
+                double[] arg = new double[nDimensions];
                 for(int j=0; j<nDimensions; j++)
+                {
                     args[i, j] = random.NextDouble() * (upperBoundaries[j] - lowerBoundaries[j]) + lowerBoundaries[j];
+                    arg[j] = args[i, j];
+                }
+                fit[i] = callFunction(arg);
             }
         }
 
         //czasem te przeksztalcenia z metaheurystyk lubia wywalac poza zakres przeszukiwany wiec proponuje by puszczac taka funkcje na koncu iteracji by poprawic takie przypadki
-        private void boundaryControl()
+        private void boundaryControl(double[] args)
         {
-            for(int i=0; i<population; i++)
+            for (int i = 0; i < nDimensions; i++)
             {
-                for(int j = 0; j<nDimensions; j++)
+                if (args[i] > upperBoundaries[i])
                 {
-                    if (args[i,j] > upperBoundaries[j])
-                    {
-                        args[i, j] = upperBoundaries[j];
-                    }
+                    args[i] = upperBoundaries[i];
+                }
 
-                    else if (args[i, j] < lowerBoundaries[j])
-                    {
-                        args[i, j] = lowerBoundaries[j];
-                    }
+                else if (args[i] < lowerBoundaries[i])
+                {
+                    args[i] = lowerBoundaries[i];
                 }
             }
         }

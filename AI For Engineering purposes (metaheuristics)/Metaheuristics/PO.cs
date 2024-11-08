@@ -49,8 +49,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
             this.nDimensions = upperBoundaries.Length;
             this.xBest = new double[nDimensions];
             this.fBestHistory = new double[nIterations];
-
             this.args = new double[population, nDimensions];
+            this.fit = new double[population];
         }
 
         public string Name { get => name; set => name = value;}
@@ -75,7 +75,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
                 double[] Xattack = new double[nDimensions];
                 for (int j = 0; j < nDimensions; j++)
                 {
-                    F1[j] *= Math.Exp(2 - currentIteration * (2 / nIterations)); // eq 35
+                    F1[j] *= Math.Exp(2 - (currentIteration + 1) * (2 / nIterations)); // eq 35
                     F2[j] = w[j] * v[j] * v[j] * Math.Cos(2 * rnd.NextDouble() * w[j]); // eq 36
                     var sum = 0.0;
                     for (int k = 0; k < population; k++)
@@ -137,8 +137,37 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 
         public double Solve()
         {
+            double[] unSelected = { 1.0, 1.0 };
+            double F3_Explore = 0.0;
+            double F3_Exploit = 0.0;
+            double[] Seq_Time_Explore = { 1.0, 1.0, 1.0 };
+            double[] Seq_Time_Exploit = { 1.0, 1.0, 1.0 };
+            double[] Seq_Cost_Explore = { 1.0, 1.0, 1.0 };
+            double[] Seq_Cost_Exploit = { 1.0, 1.0, 1.0 };
+            double Score_Explore = 0.0;
+            double Score_Exploit = 0.0;
+            double[] PF = { 0.5, 0.5, 0.3 };
+            List<double> PF_F3 = new List<double>();
+            double Mega_Explor = 0.99;
+            double Mega_Exploit = 0.99;
+
             initializePopulation();
-            
+
+            int ind = Array.IndexOf(fit, fit.Min());
+            for (int i = 0; i < nDimensions; i++)
+            {
+                XBest[i] = args[ind, i];
+            }
+            FBest = fit[ind];
+
+            bool flagChange = false;
+
+            // Unexperienced Phase
+            for (; currentIteration < 3; currentIteration++)
+            {
+
+            }
+
             return FBest;
         }
 

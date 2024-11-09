@@ -73,7 +73,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
                     var sum = 0.0;
                     for (int k = 0; k < population; k++)
                     {
-                        sum += Pumas[j].Position[k];
+                        sum += Pumas[k].Position[j];
                     }
                     mBest[j] = (sum / population) / population;
                     S1[j] += rand9;

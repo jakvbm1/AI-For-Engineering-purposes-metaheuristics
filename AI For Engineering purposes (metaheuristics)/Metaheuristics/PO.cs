@@ -1,4 +1,5 @@
 ﻿using AI_For_Engineering_purposes_metaheuristics;
+using System.Globalization;
 
 namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 {
@@ -13,6 +14,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
         private double[] fBestHistory; 
         private double fBest;
         private double[] xBest;
+        private string problemName;
 
 
         //zmienne do opdalenia algorytmu z dana funkcja
@@ -27,8 +29,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
         //parametry algorytmu do "dostrojenia"
         double PF1, PF2, PF3, U, L, Alpha;
 
-        public PO(int nIterations, int population, double[] upperBoundaries, double[] lowerBoundaries, Func<double[], double> f, double PF1 = 0.5, double PF2 = 0.5, double PF3 = 0.3, double U = 0.4, double L = 0.7, double Alpha = 2)
+        public PO(int nIterations, int population, double[] upperBoundaries, double[] lowerBoundaries, Func<double[], double> f, string problemName = "unknown", double PF1 = 0.5, double PF2 = 0.5, double PF3 = 0.3, double U = 0.4, double L = 0.7, double Alpha = 2)
         {
+            this.problemName = problemName;
             this.nIterations = nIterations;
             this.population = population;
             this.upperBoundaries = upperBoundaries;
@@ -338,6 +341,30 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
                     args[i] = lowerBoundaries[i];
                 }
             }
+        }
+
+        private void saveResults()
+        {
+            
+            Directory.CreateDirectory($"/{problemName}");
+            Directory.CreateDirectory($"/I{nIterations}P{population}");
+
+            string endstate = $"iterations {nIterations}, population {population}, number of calls {nOfCalls}, time {evaluationTime} \n";
+            endstate += FBest.ToString("n", CultureInfo.GetCultureInfo("pl")) + '\n';
+            foreach (var pos in XBest)
+            {
+                endstate += $"{pos.ToString("n", CultureInfo.GetCultureInfo("pl"))}\n";
+            }
+            File.WriteAllText($"{problemName}/I{nIterations}P{population}/endstate.txt", endstate);
+
+            string progress = "";
+            foreach(var best in fBestHistory)
+            {
+                progress += $"{best.ToString("n", CultureInfo.GetCultureInfo("pl"))}\n";
+            }
+
+            File.WriteAllText($"{problemName}/I{nIterations}P{population}/progress.txt", progress);
+
         }
     }
 

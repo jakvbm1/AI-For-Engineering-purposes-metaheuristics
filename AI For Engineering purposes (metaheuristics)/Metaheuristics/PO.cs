@@ -9,7 +9,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
         //zmienne pomocnicze do "nadzorowania pracy algorytmu
         private string name = "Puma Optimizer";
         private int nOfCalls = 0;
-        private int evaluationTime = 0;
+        private long evaluationTime = 0;
         private int currentIteration = 0;
         private double[] fBestHistory; 
         private double fBest;
@@ -159,6 +159,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
             double[] Costs_Explor = new double[nIterations];
             double[] Costs_Exploit = new double[nIterations];
 
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             initializePopulation();
 
             int ind = Array.IndexOf(Pumas, Pumas.OrderBy(p => p.Fitness).First());
@@ -303,6 +304,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 
                 fBestHistory[currentIteration] = FBest;
             }
+            watch.Stop();
+            evaluationTime =  watch.ElapsedMilliseconds / 1000;
             return FBest;
         }
 

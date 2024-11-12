@@ -122,7 +122,65 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
         // tutaj pracuj tymku
         private Puma[] Exploration(Puma[] Pumas)
         {
-            
+
+            Pumas.OrderBy(p => p.Fitness);
+            double pCR = 0.2; //eq 28
+            double PCR = 1 - pCR; //eq 29
+            double p = PCR / population;
+            double[] x = new double[nDimensions];
+            double [] y = Randn(nDimensions);
+            double [] z = new double[nDimensions];
+            double[] newArgs = new double[nDimensions];
+
+            for (int i = 0; i < population; i++) {
+
+                for (int j = 0; j < nDimensions; j++)
+                {
+                    x[j] = Pumas[i].Position[j];
+                }
+                int[] help_arr = Enumerable.Range(0, population-1).ToArray();
+                var A = help_arr.OrderBy(z => rnd.Next()).ToList();
+                A.Remove(i);
+                int a = A[0];
+                int b = A[1];
+                int c = A[2];
+                int d = A[3];
+                int e = A[4];
+                int f = A[5];
+                double G = 2 * rnd.NextDouble() - 1; //eq 26
+                if (rnd.NextDouble() < 0.5)
+                {
+                    for ( int j = 0; j < nDimensions; j++)
+                    {
+                        y[j] *=  (upperBoundaries[j]-lowerBoundaries[j]) + lowerBoundaries[j]; //Eq 25
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < nDimensions; j++)
+                    {
+                        y[j] = Pumas[a].Position[j] + G * (Pumas[a].Position[j] - Pumas[b].Position[j]) + G * (((Pumas[a].Position[j] - Pumas[b].Position[j]) - (Pumas[c].Position[j] - Pumas[d].Position[j])) + ((Pumas[c].Position[j] - Pumas[d].Position[j]) - (Pumas[e].Position[j] - Pumas[f].Position[j]))); //Eq 25
+                    }
+                    }
+                boundaryControl(y);
+                double j0 = rnd.Next(nDimensions);
+                for (int j = 0;j < nDimensions; j++)
+                {
+                    if (j == j0 || rnd.NextDouble() < pCR)
+                        z[j] = y[j];
+                    else
+                        z[j] = x[j];
+                }
+                newArgs = z;
+                double newFit = callFunction(newArgs);
+
+                if (newFit < Pumas[i].Fitness)
+                {
+                    Pumas[i].Position = newArgs;
+                    Pumas[i].Fitness  = newFit;
+                }
+            }
+
             return Pumas;
         }
 

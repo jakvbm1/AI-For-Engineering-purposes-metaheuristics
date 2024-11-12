@@ -1,5 +1,6 @@
 ﻿using AI_For_Engineering_purposes_metaheuristics;
 using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
 
 namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 {
@@ -47,6 +48,11 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
             this.xBest = new double[nDimensions];
             this.fBestHistory = new double[nIterations];
             this.Pumas = new Puma[population];
+
+            for (int i = 0; i < population; i++) 
+            {
+                Pumas[i] = new Puma(nDimensions);
+            }
         }
 
         public string Name { get => name; set => name = value;}
@@ -373,7 +379,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 
             for (int i = 0; i < population; i++)
             {
-                Pumas[i].Position = new double[nDimensions];
+                //Pumas[i].Position = new double[nDimensions];
 
                 for (int j = 0; j < nDimensions; j++)
                 {
@@ -431,7 +437,12 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 
     class Puma
     {
-        public required double[] Position;
+        public double[] Position;
         public double Fitness;
+
+        public Puma(int dim)
+        {
+            Position = new double[dim];
+        }
     }
 }

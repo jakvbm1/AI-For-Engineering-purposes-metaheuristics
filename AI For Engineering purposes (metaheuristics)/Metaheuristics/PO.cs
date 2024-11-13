@@ -1,6 +1,5 @@
 ﻿using AI_For_Engineering_purposes_metaheuristics;
 using System.Globalization;
-using System.Security.Cryptography.X509Certificates;
 
 namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 {
@@ -129,10 +128,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
             return Pumas;
         }
 
-        // tutaj pracuj tymku
         private Puma[] Exploration(Puma[] Pumas)
         {
-
             Pumas.OrderBy(p => p.Fitness);
             double pCR = 0.2; //eq 28
             double PCR = 1 - pCR; //eq 29
@@ -171,7 +168,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
                     {
                         y[j] = Pumas[a].Position[j] + G * (Pumas[a].Position[j] - Pumas[b].Position[j]) + G * (((Pumas[a].Position[j] - Pumas[b].Position[j]) - (Pumas[c].Position[j] - Pumas[d].Position[j])) + ((Pumas[c].Position[j] - Pumas[d].Position[j]) - (Pumas[e].Position[j] - Pumas[f].Position[j]))); //Eq 25
                     }
-                    }
+                }
                 boundaryControl(y);
                 double j0 = rnd.Next(nDimensions);
                 for (int j = 0;j < nDimensions; j++)
@@ -367,8 +364,16 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
                 double lmn_Explore = 1 - Mega_Explor;   // Eq(24)
                 double lmn_Exploit = 1 - Mega_Exploit;  // Eq(22)
 
-                Score_Explore = (Mega_Explor * F1_Explor) + (Mega_Explor * F2_Explor) + (lmn_Explore * (PF_F3.Min() * F3_Explore));  // Eq(20)
-                Score_Exploit = (Mega_Exploit * F1_Exploit) + (Mega_Exploit * F2_Exploit) + (lmn_Exploit * (PF_F3.Min() * F3_Exploit));  // Eq(19)
+                if (PF_F3.Any())
+                {
+                    Score_Explore = (Mega_Explor * F1_Explor) + (Mega_Explor * F2_Explor) + (lmn_Explore * (PF_F3.Min() * F3_Explore));  // Eq(20)
+                    Score_Exploit = (Mega_Exploit * F1_Exploit) + (Mega_Exploit * F2_Exploit) + (lmn_Exploit * (PF_F3.Min() * F3_Exploit));  // Eq(19)
+                }
+                else
+                {
+                    Score_Explore = (Mega_Explor * F1_Explor) + (Mega_Explor * F2_Explor) + (lmn_Explore * F3_Explore);  // Eq(20)
+                    Score_Exploit = (Mega_Exploit * F1_Exploit) + (Mega_Exploit * F2_Exploit) + (lmn_Exploit * F3_Exploit);  // Eq(19)
+                }
 
                 fBestHistory[currentIteration] = FBest;
             }

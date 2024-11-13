@@ -374,6 +374,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
             }
             watch.Stop();
             evaluationTime =  watch.ElapsedMilliseconds / 1000;
+            saveResults();
             return FBest;
         }
 
@@ -417,8 +418,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
         private void saveResults()
         {
             
-            Directory.CreateDirectory($"/{problemName}");
-            Directory.CreateDirectory($"/DIM{nDimensions}I{nIterations}P{population}");
+            Directory.CreateDirectory($@"{problemName}/DIM{nDimensions}I{nIterations}P{population}");
+            //Directory.CreateDirectory($"/DIM{nDimensions}I{nIterations}P{population}");
 
             string endstate = $"iterations {nIterations}, population {population}, number of calls {nOfCalls}, time {evaluationTime} \n";
             endstate += $"PF1 {PF1}, PF2 {PF2}, PF3 {PF3}, L {L}, U {U}, alpha {Alpha}";

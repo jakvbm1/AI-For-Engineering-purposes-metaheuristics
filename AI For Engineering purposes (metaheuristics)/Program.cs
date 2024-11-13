@@ -59,8 +59,15 @@ static void printEnd(double[] fbest, double[][] xbest, TestFunction problem, PO 
     }
     endCoeff += ")";
 
+    string endSD = "(";
+    foreach (var x in xSds)
+    {
+        endSD += $"{x}%, ";
+    }
+    endSD += ")";
+
     Console.Write($"{puma.Name}, {problem.Name}, {puma.NDimension}, {puma.PF1}, {puma.PF2}, {puma.PF3}, {puma.L}, {puma.U}, {puma.Alpha}, {puma.NIterations}, {puma.Population} ");
-    Console.Write($"{endPosition}, {endCoeff}, {fbest[best_index]}, {changeCoeff} \n");
+    Console.Write($"{endPosition},{endSD}, {endCoeff}, {fbest[best_index]}, {sd}, {changeCoeff} \n");
 }
 
 int[] N = { 10, 20, 40, 80 };

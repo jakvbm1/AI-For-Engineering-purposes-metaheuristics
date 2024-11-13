@@ -28,7 +28,11 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
         private Puma[] Pumas;
         private Random rnd = new Random();
         //parametry algorytmu do "dostrojenia"
-        double PF1, PF2, PF3, U, L, Alpha;
+        public double PF1, PF2, PF3, U, L, Alpha;
+
+        public int NDimension { get => nDimensions; }
+        public int NIterations { get => nIterations; }
+        public int Population { get => population; }
 
         public PO(int nIterations, int population, double[] upperBoundaries, double[] lowerBoundaries, Func<double[], double> f, string problemName = "unknown", double PF1 = 0.5, double PF2 = 0.5, double PF3 = 0.3, double U = 0.4, double L = 0.7, double Alpha = 2)
         {
@@ -414,15 +418,16 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
         {
             
             Directory.CreateDirectory($"/{problemName}");
-            Directory.CreateDirectory($"/I{nIterations}P{population}");
+            Directory.CreateDirectory($"/DIM{nDimensions}I{nIterations}P{population}");
 
             string endstate = $"iterations {nIterations}, population {population}, number of calls {nOfCalls}, time {evaluationTime} \n";
+            endstate += $"PF1 {PF1}, PF2 {PF2}, PF3 {PF3}, L {L}, U {U}, alpha {Alpha}";
             endstate += FBest.ToString("n", CultureInfo.GetCultureInfo("pl")) + '\n';
             foreach (var pos in XBest)
             {
                 endstate += $"{pos.ToString("n", CultureInfo.GetCultureInfo("pl"))}\n";
             }
-            File.WriteAllText($"{problemName}/I{nIterations}P{population}/endstate.txt", endstate);
+            File.WriteAllText($"{problemName}/DIM{nDimensions}I{nIterations}P{population}/endstate.txt", endstate);
 
             string progress = "";
             foreach(var best in fBestHistory)
@@ -430,7 +435,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
                 progress += $"{best.ToString("n", CultureInfo.GetCultureInfo("pl"))}\n";
             }
 
-            File.WriteAllText($"{problemName}/I{nIterations}P{population}/progress.txt", progress);
+            File.WriteAllText($"{problemName}/DIM{nDimensions}I{nIterations}P{population}/progress.txt", progress);
 
         }
     }

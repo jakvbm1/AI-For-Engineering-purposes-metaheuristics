@@ -320,12 +320,18 @@ int[] D = { 2, 5, 10, 30};
 
 //for (int h = 0; h < D.Length; h++)
 //{
-var problem = new Beale();
-double[] test = {-4.150132246971605, -3.5065512376680807};
+var problem = new Sphere(2);
 
+var po = new PO(800, 80, problem.UpperBoundaries, problem.LowerBoundaries, problem.function, $"{problem.Name}");
+Console.WriteLine(po.Solve());
+foreach (var x in po.XBest)
+{
+    Console.WriteLine(x);
+}
 
-Console.WriteLine(new Rastrigin(2).function(test));
-
+double[] xs = {-1682.0858792304925,
+1.634491443743647E-08};
+Console.WriteLine(problem.function(xs));
 
     //for (int j = 0; j < N.Length; j++)
     //{
@@ -338,12 +344,12 @@ Console.WriteLine(new Rastrigin(2).function(test));
     //        for (int i = 0; i < 10; i++)
     //        {
 
-    //            fbests[i] = optimizer.Solve();
-    //            xbests[i] = optimizer.XBest;
-    //        }
-    //        printEndWolf(fbests, xbests, problem, optimizer);
-    //    }
-    //}
+//            fbests[i] = optimizer.Solve();
+//            xbests[i] = optimizer.XBest;
+//        }
+//        printEndWolf(fbests, xbests, problem, optimizer);
+//    }
+//}
 //}
 
 //double[] pf1 = { 0.2, 0.5, 0.8 };

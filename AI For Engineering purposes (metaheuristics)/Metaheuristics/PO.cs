@@ -228,7 +228,11 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
             initializePopulation();
 
             int ind = Array.IndexOf(Pumas, Pumas.OrderBy(p => p.Fitness).First());
-            XBest = Pumas[ind].Position;
+            for(int i = 0; i < XBest.Length; i++)
+            {
+                XBest[i] = Pumas[ind].Position[i];
+            }
+            
             FBest = Pumas[ind].Fitness;
 
             bool Flag_Change = false;
@@ -247,7 +251,10 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 
                 Puma[] CombinedPumas = Pumas.Concat(Pumas_explore).Concat(Pumas_exploit).ToArray();
                 Pumas = CombinedPumas.OrderBy(s => s.Fitness).Take(population).ToArray();
-                XBest = Pumas[0].Position;
+                for (int i = 0; i < XBest.Length; i++)
+                {
+                    XBest[i] = Pumas[0].Position[i];
+                }
                 FBest = Pumas[0].Fitness;
                 fBestHistory[currentIteration] = FBest;
             }
@@ -303,7 +310,10 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 
                     if (TBest.Fitness < FBest)
                     {
-                        XBest = TBest.Position;
+                        for (int i = 0; i < XBest.Length; i++)
+                        {
+                            XBest[i] = TBest.Position[i];
+                        }
                         FBest = TBest.Fitness;
                     }
                 }
@@ -328,7 +338,10 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 
                     if (TBest.Fitness < FBest)
                     {
-                        XBest = TBest.Position;
+                        for (int i = 0; i < XBest.Length; i++)
+                        {
+                            XBest[i] = TBest.Position[i];
+                        }
                         FBest = TBest.Fitness;
                     }
                 }

@@ -131,7 +131,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
         private Puma[] Exploration(Puma[] Pumas)
         {
             Pumas.OrderBy(p => p.Fitness);
-            double pCR = 0.2; //eq 28
+            double pCR = U; //eq 28
             double PCR = 1 - pCR; //eq 29
             double p = PCR / population;
             double[] x = new double[nDimensions];

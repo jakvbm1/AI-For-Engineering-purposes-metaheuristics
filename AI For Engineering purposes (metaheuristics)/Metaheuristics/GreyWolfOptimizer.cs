@@ -19,6 +19,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
         public double[] XBest { get; set; }
         public double FBest { get; set; }
 
+        public int NDimension { get => dimensions; }
+        public int NIterations { get => targetIterations; }
+        public int Population { get => population; }
         public GreyWolfOptimizer(Func<double[], double> fitnessFunction, int population, int targetIterations, double[] upperBoundaries, double[] lowerBoundaries)
         {
             this.FitnessFunction = fitnessFunction;
@@ -31,6 +34,11 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
             this.currentIteration = 0;
             this.NumberOfEvaluationFitnessFunction = 0;
             this.Wolves = new Wolf[this.population];
+
+            for(int i=0; i < this.population; i++)
+            {
+                Wolves[i] = new Wolf(dimensions);
+            }
 
             for (int i = 0; i < this.population; i++)
             {
@@ -207,5 +215,10 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
     {
         public double[] Position;
         public double Fitness;
+        public Wolf(int dim)
+        {
+            Position = new double[dim];
+        }
+
     }
 }

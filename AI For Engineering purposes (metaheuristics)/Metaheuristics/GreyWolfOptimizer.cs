@@ -2,7 +2,7 @@ using AI_For_Engineering_purposes_metaheuristics;
 
 namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 {
-    class GreyWolfOptimizer : IOptimizationAlgorithm
+    class GreyWolfOptimizer : IOA
     {
         private int currentIteration;
         private readonly int targetIterations;

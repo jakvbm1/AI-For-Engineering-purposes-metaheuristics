@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AI_For_Engineering_purposes_metaheuristics
 {
-    public interface IOptimizationAlgorithm
+    public interface IOA
     {
         // Nazwa algorytmu
         string Name { get; set; }

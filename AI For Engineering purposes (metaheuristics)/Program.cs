@@ -318,75 +318,68 @@ int[] N = { 10, 20, 40, 80 };
 int[] I = { 5, 10, 20, 40, 60, 80 };
 int[] D = { 2, 5, 10, 30};
 
+
+
 //for (int h = 0; h < D.Length; h++)
 //{
-var problem = new Sphere(2);
+    var prblm = new Beale();
+    //var optimizer = new PO(100, 100, prblm.UpperBoundaries, prblm.LowerBoundaries, prblm.function, $"{prblm.Name}");
 
-var po = new PO(800, 80, problem.UpperBoundaries, problem.LowerBoundaries, problem.function, $"{problem.Name}");
-Console.WriteLine(po.Solve());
-foreach (var x in po.XBest)
-{
-    Console.WriteLine(x);
-}
+    for (int j = 0; j < N.Length; j++)
+    {
+        for (int k = 0; k < I.Length; k++)
+        {
+            double[] fbests = new double[10];
+            double[][] xbests = new double[10][];
+            var optimizer = new PO(I[k], N[j], prblm.UpperBoundaries, prblm.LowerBoundaries, prblm.function, $"{prblm.Name}");
+            //var optimizer = new GreyWolfOptimizer(prblm.function, N[j], I[k], prblm.UpperBoundaries, prblm.LowerBoundaries);
+            for (int i = 0; i < 10; i++)
+            {
+                optimizer = new PO(I[k], N[j], prblm.UpperBoundaries, prblm.LowerBoundaries, prblm.function, $"{prblm.Name}");
+                fbests[i] = optimizer.Solve();
+                xbests[i] = optimizer.XBest;
+            }
+            printEndPuma(fbests, xbests, prblm, optimizer);
+        }
+    }
+   // }
 
-double[] xs = {-1682.0858792304925,
-1.634491443743647E-08};
-Console.WriteLine(problem.function(xs));
+    double[] pf1 = { 0.2, 0.5, 0.8 };
+    double[] pf2 = { 0.2, 0.5, 0.8 };
+    double[] pf3 = { 0.1, 0.3, 0.5 };
+    double[] U = { 0.2, 0.4, 0.6 };
+    double[] L = { 0.5, 0.7, 0.9 };
+    int[] ALPHA = { 1, 2, 3 };
+    var problem =new Beale();
+    foreach (var p1 in pf1)
+    {
+        foreach (var p2 in pf2)
+        {
+            foreach (var p3 in pf3)
+            {
+                foreach (var u in U)
+                {
+                    foreach (var l in L)
+                    {
+                        foreach (var a in ALPHA)
+                        {
+                            double[] fbests = new double[10];
+                            double[][] xbests = new double[10][];
+                            var optimizer = new PO(I[1], N[1], problem.UpperBoundaries, problem.LowerBoundaries, problem.function, $"{problem.Name}", p1, p2, p3, u, l, a);
+                            for (int i = 0; i < 10; i++)
+                            {
+                                optimizer = new PO(I[1], N[1], problem.UpperBoundaries, problem.LowerBoundaries, problem.function, $"{problem.Name}", p1, p2, p3, u, l, a);
+                                fbests[i] = optimizer.Solve();
+                                xbests[i] = optimizer.XBest;
+                            }
+                            printEndPuma(fbests, xbests, problem, optimizer);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-    //for (int j = 0; j < N.Length; j++)
-    //{
-    //    for (int k = 0; k < I.Length; k++)
-    //    {
-    //        double[] fbests = new double[10];
-    //        double[][] xbests = new double[10][];
-    //        //var optimizer = new PO(I[k], N[j], problem.UpperBoundaries, problem.LowerBoundaries, problem.function, $"{problem.Name}");
-    //        var optimizer = new GreyWolfOptimizer(problem.function, N[j], I[k], problem.UpperBoundaries, problem.LowerBoundaries);
-    //        for (int i = 0; i < 10; i++)
-    //        {
-
-//            fbests[i] = optimizer.Solve();
-//            xbests[i] = optimizer.XBest;
-//        }
-//        printEndWolf(fbests, xbests, problem, optimizer);
-//    }
-//}
-//}
-
-//double[] pf1 = { 0.2, 0.5, 0.8 };
-//double[] pf2 = { 0.2, 0.5, 0.8 };
-//double[] pf3 = { 0.1, 0.3, 0.5 };
-//double[] U = { 0.2, 0.4, 0.6 };
-//double[] L = { 0.5, 0.7, 0.9 };
-//int[] ALPHA = { 1, 2, 3 };
-//var problem = new Sphere(D[2]);
-//foreach (var p1 in pf1)
-//{
-//    foreach (var p2 in pf2)
-//    {
-//        foreach (var p3 in pf3)
-//        {
-//            foreach (var u in U)
-//            {
-//                foreach (var l in L)
-//                {
-//                    foreach (var a in ALPHA)
-//                    {
-//                        double[] fbests = new double[10];
-//                        double[][] xbests = new double[10][];
-//                        var optimizer = new PO(I[1], N[1], problem.UpperBoundaries, problem.LowerBoundaries, problem.function, $"{problem.Name}", p1, p2, p3, u, l, a);
-//                        for (int i = 0; i < 10; i++)
-//                        {
-
-//                            fbests[i] = optimizer.Solve();
-//                            xbests[i] = optimizer.XBest;
-//                        }
-//                        printEndPuma(fbests, xbests, problem, optimizer);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
 
 
 

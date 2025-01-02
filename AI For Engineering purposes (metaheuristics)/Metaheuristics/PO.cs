@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 {
-    class PO : IOptimizationAlgorithm
+    class PO : IOA
     {
 
         //zmienne pomocnicze do "nadzorowania pracy algorytmu

@@ -13,6 +13,15 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Interfaces
         double UpperBoundary { get; set; }
         double LowerBoundary { get; set; }
         double DefaultValue { get; set; }
+
+        public ParamInfo(string name, string description, double upperBoundary, double lowerBoundary, double defaultValue)
+        {
+            Name = name;
+            Description = description;
+            UpperBoundary = upperBoundary;
+            LowerBoundary = lowerBoundary;
+            DefaultValue = defaultValue;
+        }
     }
 
     internal interface IOptimizationAlgorithm

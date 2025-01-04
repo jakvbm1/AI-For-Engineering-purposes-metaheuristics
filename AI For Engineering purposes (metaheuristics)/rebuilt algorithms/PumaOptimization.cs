@@ -9,7 +9,7 @@ using System.Xml.Linq;
 
 namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 {
-    class Puma
+    public class Puma
     {
         public double[] Position;
         public double Fitness;
@@ -19,6 +19,111 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
             Position = new double[dim];
         }
     }
+
+
+
+    public class PumaStateWriter : IStateWriter
+    {
+        private int currentIteration;
+        private int populationSize;
+        private int dimension;
+        private int iterations;
+
+        private double pf1, pf2, pf3, l, u;
+        private int a;
+
+        private string functionName;
+        private int numberOfEvaluations;
+        private Puma[] population;
+
+        public PumaStateWriter(int currentIteration, int populationSize, int dimension, int iterations, double pf1, double pf2, double pf3, double l, double u, int a, int numberOfEvaluations, Puma[] population, string functionName)
+        {
+            this.currentIteration = currentIteration;
+            this.populationSize = populationSize;
+            this.dimension = dimension;
+            this.iterations = iterations;
+            this.pf1 = pf1;
+            this.pf2 = pf2;
+            this.pf3 = pf3;
+            this.l = l;
+            this.u = u;
+            this.a = a;
+            this.numberOfEvaluations = numberOfEvaluations;
+            this.population = population;
+            this.functionName = functionName;
+        }
+
+        public void SaveToFileStateOfAlgorithm(string path)
+        {
+            using (StreamWriter sw = new StreamWriter($"{path}/POState.txt"))
+            {
+                sw.WriteLine(functionName);
+                sw.WriteLine(population);
+                sw.WriteLine(dimension);
+                sw.WriteLine(iterations);
+
+                sw.WriteLine(currentIteration.ToString());
+                sw.WriteLine(numberOfEvaluations.ToString());
+
+                sw.WriteLine(pf1);
+                sw.WriteLine(pf2);
+                sw.WriteLine(pf3);
+                sw.WriteLine(l);
+                sw.WriteLine(u);
+                sw.WriteLine(a);
+                foreach (Puma p in population)
+                {
+                    string line = "";
+                    for(int i = 0; i < p.Position.Length; i++)
+                    {
+                        line += p.Position[i].ToString() + ", ";
+                    }
+                    line += p.Fitness.ToString();
+                    sw.WriteLine(line);
+                }
+            }
+        }
+    }
+
+    public class PumaStateReader : IStateReader
+    {
+        public void LoadFromFileStateOfAlgorithm(string path)
+        {
+            if (File.Exists(path + "/POState.txt"))
+            {
+                using (StreamReader sr = new StreamReader(path + "/POState.txt"))
+                {
+                    string functionName = sr.ReadLine();
+                    int population = int.Parse(sr.ReadLine());
+                    int dimension = int.Parse(sr.ReadLine());
+                    int iterations = int.Parse(sr.ReadLine());
+                    int currentIteration = int.Parse(sr.ReadLine());
+                    int n_call = int.Parse(sr.ReadLine());
+                    double pf1 = double.Parse(sr.ReadLine());
+                    double pf2 = double.Parse(sr.ReadLine());
+                    double pf3 = double.Parse(sr.ReadLine());
+                    double l = double.Parse(sr.ReadLine());
+                    double u = double.Parse(sr.ReadLine());
+                    int a = int.Parse(sr.ReadLine());
+                    Puma[] pumas = new Puma[population];
+                    for(int i = 0; i < population;i++)
+                    {
+                        string line = sr.ReadLine();
+                        string[] args = line.Split(", ");
+
+                        pumas[i].Fitness = int.Parse(args[args.Length - 1]);
+
+                        pumas[i].Position = new double[dimension];
+                        for(int j = 0; j < dimension;j++)
+                        {
+                            pumas[i].Position[j] = double.Parse(args[j]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     internal class PumaOptimization : IOptimizationAlgorithm
     {
@@ -39,6 +144,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         private Random rnd = new Random();
         private int currentIteration = 0;
 
+        private IGenerateTextReport textReport;
+
         public PumaOptimization()
         {
             var population = new ParamInfo("population", "population of pumas", 10000, 3, 10 );
@@ -53,6 +160,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
            
 
             ParamInfo = new ParamInfo[] {population, iterations, dimensions, PF1, PF2, PF3, L, U, alpha};
+
         }
 
         public string Name { get => name; set => name = value; }
@@ -60,22 +168,24 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public IStateWriter writer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public IStateReader reader { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public IGeneratePDFReport pdfReportGenerator { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IGenerateTextReport stringReportGenerator { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IGenerateTextReport stringReportGenerator { get => textReport; set => textReport = value; }
         public double[] Xbest { get => xbest; set => xbest = value; }
         public double Fbest { get => fbest; set => fbest = value; }
         public int NumberOfEvaluationFitnessFunction { get => n_call; set => n_call = value; }
+        public double Pf1 { get => pf1; set => pf1 = value; }
+        public int Iterations { get => iterations; set => iterations = value; }
 
-        public void Solve(fitnessFunction f, double[,] domain, params double[] parameters)
+        public void Solve(fitnessFunction f, double[,] domain, string functionName, params double[] parameters)
         {
             population = (int)parameters[0];
             iterations = (int)parameters[1];
             dimensions = (int)parameters[2];
-            pf1 = parameters[3];
+            Pf1 = parameters[3];
             pf2 = parameters[4];
             pf3 = parameters[5];
-            l = parameters[5];
-            u = parameters[6];
-            a = (int)parameters[7];
+            l = parameters[6];
+            u = parameters[7];
+            a = (int)parameters[8];
 
             var Pumas = new Puma[population];
 
@@ -145,6 +255,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                     xbest[i] = Pumas[0].Position[i];
                 }
                 fbest = Pumas[0].Fitness;
+                writer = new PumaStateWriter(currentIteration, population, dimensions, iterations, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
+                writer.SaveToFileStateOfAlgorithm("");
             }
 
             Seq_Cost_Explore[0] = Math.Abs(InitialFBest - Costs_Explor[0]); // Eq(5)
@@ -162,14 +274,14 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                     PF_F3.Add(Seq_Cost_Exploit[i]);
             }
 
-            var F1_Explor = pf1 * (Seq_Cost_Explore[0] / Seq_Time_Explore[0]);  // Eq(1)
-            var F1_Exploit = pf1 * (Seq_Cost_Exploit[0] / Seq_Time_Exploit[0]); // Eq(2)
+            var F1_Explor = Pf1 * (Seq_Cost_Explore[0] / Seq_Time_Explore[0]);  // Eq(1)
+            var F1_Exploit = Pf1 * (Seq_Cost_Exploit[0] / Seq_Time_Exploit[0]); // Eq(2)
             var F2_Explor = pf2 * ((Seq_Cost_Explore[0] + Seq_Cost_Explore[1] + Seq_Cost_Explore[2]) / (Seq_Time_Explore[0] + Seq_Time_Explore[1] + Seq_Time_Explore[2]));  // Eq(3)
             var F2_Exploit = pf2 * ((Seq_Cost_Exploit[0] + Seq_Cost_Exploit[1] + Seq_Cost_Exploit[2]) / (Seq_Time_Exploit[0] + Seq_Time_Exploit[1] + Seq_Time_Exploit[2])); // Eq(4)
 
             // Score calculation
-            Score_Explore = (pf1 * F1_Explor) + (pf2 * F2_Explor);  // Eq(11)
-            Score_Exploit = (pf1 * F1_Exploit) + (pf2 * F2_Exploit);    // Eq(12)
+            Score_Explore = (Pf1 * F1_Explor) + (pf2 * F2_Explor);  // Eq(11)
+            Score_Exploit = (Pf1 * F1_Exploit) + (pf2 * F2_Exploit);    // Eq(12)
 
             // Experienced Phase
             for (; currentIteration < iterations; currentIteration++)
@@ -245,8 +357,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                     Seq_Time_Exploit[0] = Count_select[1];
                 }
 
-                F1_Explor = pf1 * (Seq_Cost_Explore[0] / Seq_Time_Explore[0]);    // Eq(14)
-                F1_Exploit =  pf1 * (Seq_Cost_Exploit[0] / Seq_Time_Exploit[0]);   // Eq(13)
+                F1_Explor = Pf1 * (Seq_Cost_Explore[0] / Seq_Time_Explore[0]);    // Eq(14)
+                F1_Exploit =  Pf1 * (Seq_Cost_Exploit[0] / Seq_Time_Exploit[0]);   // Eq(13)
                 F2_Explor = pf2 * ((Seq_Cost_Explore[0] + Seq_Cost_Explore[1] + Seq_Cost_Explore[2]) / (Seq_Time_Explore[0] + Seq_Time_Explore[1] + Seq_Time_Explore[2]));    // Eq(16)
                 F2_Exploit = pf2 * ((Seq_Cost_Exploit[0] + Seq_Cost_Exploit[1] + Seq_Cost_Exploit[2]) / (Seq_Time_Exploit[0] + Seq_Time_Exploit[1] + Seq_Time_Exploit[2]));   // Eq(15)
 
@@ -275,7 +387,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                     Score_Explore = (Mega_Explor * F1_Explor) + (Mega_Explor * F2_Explor) + (lmn_Explore * F3_Explore);  // Eq(20)
                     Score_Exploit = (Mega_Exploit * F1_Exploit) + (Mega_Exploit * F2_Exploit) + (lmn_Exploit * F3_Exploit);  // Eq(19)
                 }
-
+                writer = new PumaStateWriter(currentIteration, population, dimensions, iterations, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
+                writer.SaveToFileStateOfAlgorithm("");
             }
         }
 

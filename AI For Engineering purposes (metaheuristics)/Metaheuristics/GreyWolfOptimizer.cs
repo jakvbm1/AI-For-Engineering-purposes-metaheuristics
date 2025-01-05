@@ -1,7 +1,10 @@
+using AI_For_Engineering_purposes__metaheuristics_.Interfaces;
 using AI_For_Engineering_purposes_metaheuristics;
 
 namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 {
+
+
     class GreyWolfOptimizer : IOA
     {
         private int currentIteration;
@@ -94,7 +97,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Metaheuristics
 
                 watch.Stop();
                 this.Time += watch.ElapsedMilliseconds;
-                SaveToFileStateOfAlghoritm();
+                
             }
 
             NumberOfEvaluationFitnessFunction += population;

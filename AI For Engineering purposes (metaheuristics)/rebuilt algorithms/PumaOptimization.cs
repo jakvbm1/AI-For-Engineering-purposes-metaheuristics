@@ -20,6 +20,49 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         }
     }
 
+    public class PumaTextReport : IGenerateTextReport
+    {
+        string functionName;
+        double fBest;
+        double[] xBest;
+        double pf1, pf2, pf3, l, u;
+        int a, iteration, population, dimension;
+
+        private string report;
+
+        public PumaTextReport(string functionName, double fBest, double[] xBest, double pf1, double pf2, double pf3, double l, double u, int a, int iteration, int population, int dimension, string reportString)
+        {
+            this.functionName = functionName;
+            this.fBest = fBest;
+            this.xBest = xBest;
+            this.pf1 = pf1;
+            this.pf2 = pf2;
+            this.pf3 = pf3;
+            this.l = l;
+            this.u = u;
+            this.a = a;
+            this.iteration = iteration;
+            this.population = population;
+            this.dimension = dimension;
+            ReportString = reportString;
+        }
+
+        private void setReport()
+        {
+            ReportString += "Grey Wolf Optimization Algorithm \n";
+            ReportString += $"{functionName} \n";
+            ReportString += $"iteracje {iteration} populacja {population}  wymiary {dimension}\n";
+            ReportString += $"Najlepsza wartość {fBest}\n";
+            ReportString += $"Pozycja końcowa: \n";
+
+            foreach(var x in xBest)
+            {
+                ReportString += $"{x}, ";
+            }
+        }
+
+        public string ReportString { get => report; set => report = value; }
+    }
 
 
     public class PumaStateWriter : IStateWriter
@@ -58,7 +101,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
             using (StreamWriter sw = new StreamWriter($"{path}/POState.txt"))
             {
                 sw.WriteLine(functionName);
-                sw.WriteLine(population);
+                sw.WriteLine(populationSize);
                 sw.WriteLine(dimension);
                 sw.WriteLine(iterations);
 

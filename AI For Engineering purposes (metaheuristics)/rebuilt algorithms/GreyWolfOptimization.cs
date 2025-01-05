@@ -20,6 +20,51 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
     }
 
+    class WolfStateWriter : IStateWriter
+    {
+        private string functionName;
+        private int population;
+        private int dimension;
+        private int iteration;
+        private int numberOfEvaluations;
+        private int currentIteration;
+        Wolf[] wolves;
+        public WolfStateWriter(int population, int dimension, int iteration, int currentIteration, int numberOfEvaluations, Wolf[] wolves, string functionName)
+        {
+            this.functionName = functionName;
+            this.population = population;
+            this.dimension = dimension;
+            this.iteration = iteration;
+            this.currentIteration = currentIteration;
+            this.wolves = wolves;
+            this.numberOfEvaluations = numberOfEvaluations;
+        }
+
+        public void SaveToFileStateOfAlgorithm(string path)
+        {
+            using (StreamWriter sw = new StreamWriter($"{path}/GWOState.txt"))
+            {
+                sw.WriteLine(functionName);
+                sw.WriteLine(population);
+                sw.WriteLine(dimension);
+                sw.WriteLine(iteration);
+
+                sw.WriteLine(currentIteration.ToString());
+                sw.WriteLine(numberOfEvaluations.ToString());
+                foreach (Wolf p in wolves)
+                {
+                    string line = "";
+                    for (int i = 0; i < p.Position.Length; i++)
+                    {
+                        line += p.Position[i].ToString() + ", ";
+                    }
+                    line += p.Fitness.ToString();
+                    sw.WriteLine(line);
+                }
+            }
+        }
+    }
+
     internal class GreyWolfOptimization : IOptimizationAlgorithm
     {
         private int nCall = 0;
@@ -114,7 +159,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 (alpha, beta, delta) = GetAlphaBetaDelta();
                 Xbest = alpha.Position;
                 Fbest = alpha.Fitness;
-
+                writer = new WolfStateWriter(population, dimensions, iterations, currentIteration, nCall, Wolves, functionName);
+                writer.SaveToFileStateOfAlgorithm("");
             }
 
             NumberOfEvaluationFitnessFunction += population;

@@ -20,6 +20,48 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
     }
 
+    public class WolfTextReport: IGenerateTextReport
+    {
+        private string functionName;
+        private int population;
+        private int dimension;
+        private int iteration;
+        private int numberOfEvaluations;
+        private double fBest;
+        private double[] xBest;
+
+        private string report;
+
+        public WolfTextReport(string functionName, int population, int dimension, int iteration, int numberOfEvaluations, double fBest, double[] xBest)
+        {
+            this.functionName = functionName;
+            this.population = population;
+            this.dimension = dimension;
+            this.iteration = iteration;
+            this.numberOfEvaluations = numberOfEvaluations;
+            this.fBest = fBest;
+            this.xBest = xBest;
+
+            setReport();
+        }
+
+        private void setReport()
+        {
+            ReportString += "Grey Wolf Optimization Algorithm \n";
+            ReportString += $"{functionName} \n";
+            ReportString += $"iteracje {iteration} populacja {population}  wymiary {dimension}\n";
+            ReportString += $"Najlepsza wartość {fBest}\n";
+            ReportString += $"Pozycja końcowa: \n";
+
+            foreach (var x in xBest)
+            {
+                ReportString += $"{x}, ";
+            }
+        }
+
+        public string ReportString { get => report; set => report = value; }
+    }
+
     class WolfStateWriter : IStateWriter
     {
         private string functionName;
@@ -80,6 +122,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         private  Wolf[] Wolves;
         private  fitnessFunction FitnessFunction;
         private  Random rnd = new Random();
+        private IGenerateTextReport textReport;
 
         public GreyWolfOptimization()
         {
@@ -95,7 +138,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public IStateWriter writer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public IStateReader reader { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public IGeneratePDFReport pdfReportGenerator { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IGenerateTextReport stringReportGenerator { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IGenerateTextReport stringReportGenerator { get => textReport; set =>textReport = value; }
         public double[] Xbest { get => xbest; set => xbest = value; }
         public double Fbest { get => fbest; set => fbest = value; }
         public int NumberOfEvaluationFitnessFunction { get => nCall; set => nCall = value; }
@@ -164,6 +207,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
             }
 
             NumberOfEvaluationFitnessFunction += population;
+            stringReportGenerator = new WolfTextReport(functionName, population, dimensions, iterations, nCall, Fbest, xbest);
         }
 
         private double CalculateFitnessFunction(double[] args)

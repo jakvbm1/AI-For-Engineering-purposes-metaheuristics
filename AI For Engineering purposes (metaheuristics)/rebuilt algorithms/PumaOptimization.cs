@@ -30,7 +30,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         private string report;
 
-        public PumaTextReport(string functionName, double fBest, double[] xBest, double pf1, double pf2, double pf3, double l, double u, int a, int iteration, int population, int dimension, string reportString)
+        public PumaTextReport(string functionName, double fBest, double[] xBest, double pf1, double pf2, double pf3, double l, double u, int a, int iteration, int population, int dimension)
         {
             this.functionName = functionName;
             this.fBest = fBest;
@@ -44,12 +44,12 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
             this.iteration = iteration;
             this.population = population;
             this.dimension = dimension;
-            ReportString = reportString;
+
         }
 
         private void setReport()
         {
-            ReportString += "Grey Wolf Optimization Algorithm \n";
+            ReportString += "Puma Optimization Algorithm \n";
             ReportString += $"{functionName} \n";
             ReportString += $"iteracje {iteration} populacja {population}  wymiary {dimension}\n";
             ReportString += $"Najlepsza wartość {fBest}\n";
@@ -433,6 +433,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 writer = new PumaStateWriter(currentIteration, population, dimensions, iterations, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
                 writer.SaveToFileStateOfAlgorithm("");
             }
+            textReport = new PumaTextReport(functionName, fbest, xbest, pf1, pf2, pf3, l, u, a, iterations, population, dimensions);
         }
 
         private void boundaryControl(ref double[] args, double[,] domain)

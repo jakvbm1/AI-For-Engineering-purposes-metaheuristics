@@ -1,5 +1,7 @@
 ﻿using AI_For_Engineering_purposes__metaheuristics_.Interfaces;
 using AI_For_Engineering_purposes__metaheuristics_.Metaheuristics;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,46 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
             Position = new double[dim];
         }
 
+    }
+
+    public class WolfPDFReport : IGeneratePDFReport
+    {
+        private string functionName;
+        private int population;
+        private int dimension;
+        private int iteration;
+        private int numberOfEvaluations;
+        private double fBest;
+        private double[] xBest;
+
+        public WolfPDFReport(string functionName, int population, int dimension, int iteration, int numberOfEvaluations, double fBest, double[] xBest)
+        {
+            this.functionName = functionName;
+            this.population = population;
+            this.dimension = dimension;
+            this.iteration = iteration;
+            this.numberOfEvaluations = numberOfEvaluations;
+            this.fBest = fBest;
+            this.xBest = xBest;
+        }
+
+        public void GenerateReport(string path)
+        {
+            PdfDocument document = new PdfDocument();
+            document.Info.Title = "Puma PDF Report";
+
+            PdfPage page = document.AddPage();
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+            XFont font = new XFont("Arial", 12, XFontStyleEx.Regular);
+
+            gfx.DrawString("Grey Wolf Optimization Algorithm", new XFont("Arial", 16, XFontStyleEx.Bold), XBrushes.Black, new XRect(0, 20, page.Width, page.Height), XStringFormats.TopCenter);
+            gfx.DrawString($"{functionName}", font, XBrushes.Black, new XRect(40, 40, page.Width - 80, page.Height), XStringFormats.TopLeft);
+            gfx.DrawString($"Iteracje: {iteration}, populacja: {population}, wymiary: {dimension}", font, XBrushes.Black, new XRect(40, 60, page.Width - 80, page.Height), XStringFormats.TopLeft);
+            gfx.DrawString($"Najlepsza wartość (fBest): {fBest}", font, XBrushes.Black, new XRect(40, 80, page.Width - 80, page.Height), XStringFormats.TopLeft);
+            gfx.DrawString($"Pozycja końcowa (xBest): {string.Join("; ", xBest)}", font, XBrushes.Black, new XRect(40, 100, page.Width - 80, page.Height), XStringFormats.TopLeft);
+
+            document.Save($"{path}\\GWO_PDF_Report.pdf");
+        }
     }
 
     public class WolfTextReport: IGenerateTextReport
@@ -49,9 +91,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         {
             ReportString += "Grey Wolf Optimization Algorithm \n";
             ReportString += $"{functionName} \n";
-            ReportString += $"iteracje {iteration} populacja {population}  wymiary {dimension}\n";
-            ReportString += $"Najlepsza wartość {fBest}\n";
-            ReportString += $"Pozycja końcowa: \n";
+            ReportString += $"Iteracje: {iteration}; populacja: {population}; wymiary: {dimension} \n";
+            ReportString += $"Najlepsza wartość (fBest): {fBest}\n";
+            ReportString += $"Pozycja końcowa (xBest): \n";
 
             foreach (var x in xBest)
             {
@@ -84,7 +126,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void SaveToFileStateOfAlgorithm(string path)
         {
-            using (StreamWriter sw = new StreamWriter($"{path}/GWOState.txt"))
+            using (StreamWriter sw = new StreamWriter($"{path}\\GWOState.txt"))
             {
                 sw.WriteLine(functionName);
                 sw.WriteLine(population);
@@ -122,7 +164,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         private  Wolf[] Wolves;
         private  fitnessFunction FitnessFunction;
         private  Random rnd = new Random();
+
         private IGenerateTextReport textReport;
+        private IGeneratePDFReport pdfReport;
 
         public GreyWolfOptimization()
         {
@@ -137,7 +181,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public ParamInfo[] ParamInfo { get => paramInfo; set => paramInfo = value; }
         public IStateWriter writer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public IStateReader reader { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IGeneratePDFReport pdfReportGenerator { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IGeneratePDFReport pdfReportGenerator { get => pdfReport; set => pdfReport = value; }
         public IGenerateTextReport stringReportGenerator { get => textReport; set =>textReport = value; }
         public double[] Xbest { get => xbest; set => xbest = value; }
         public double Fbest { get => fbest; set => fbest = value; }
@@ -208,6 +252,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
             NumberOfEvaluationFitnessFunction += population;
             stringReportGenerator = new WolfTextReport(functionName, population, dimensions, iterations, nCall, Fbest, xbest);
+            pdfReportGenerator = new WolfPDFReport(functionName, population, dimensions, iterations, nCall, Fbest, xbest);
         }
 
         private double CalculateFitnessFunction(double[] args)

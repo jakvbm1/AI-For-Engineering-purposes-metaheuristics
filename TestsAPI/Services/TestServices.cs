@@ -5,7 +5,7 @@ namespace TestsAPI.Services
 {
     public class TestServices
     {
-        private readonly List<Test> _tests;
+        private readonly List<Test> _tests = [];
         private readonly Timer timer;
 
         public TestServices()
@@ -19,9 +19,7 @@ namespace TestsAPI.Services
             return test;
         }
         public Test StartTest(Guid id) { 
-        
-        var test = _tests.FirstOrDefault(x => x.Id == id);
-         
+            var test = _tests.FirstOrDefault(x => x.Id == id);
             if (test != null) test.Status = "running";
             return test;
         }

@@ -1,9 +1,11 @@
 ﻿
 using AI_For_Engineering_purposes__metaheuristics_;
-using AI_For_Engineering_purposes__metaheuristics_.Metaheuristics;
 using AI_For_Engineering_purposes_metaheuristics;
+using AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions;
+using AI_For_Engineering_purposes__metaheuristics_.Interfaces;
+using AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms;
 
-//static void printEnd(double[] fbest, double[][] xbest, TestFunction problem, PO puma)
+//static void printEnd(double[] fbest, double[][] xbest, TestFunction problem, Pwolf)
 //{
 //    double avg = fbest.Average();
 //    double sumSquare = fbest.Select(val => (val - avg) * (val - avg)).Sum();
@@ -78,8 +80,10 @@ using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.IO;
 using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
+using AI_For_Engineering_purposes__metaheuristics_.Interfaces;
 
-static void printEndPuma(double[] fbest, double[][] xbest, TestFunction problem, PO puma)
+static void printEndPuma(double[] fbest, double[][] xbest, IFunction problem, PumaOptimization puma)
 {
     double avg = fbest.Average();
     double sumSquare = fbest.Select(val => (val - avg) * (val - avg)).Sum();
@@ -179,15 +183,15 @@ static void printEndPuma(double[] fbest, double[][] xbest, TestFunction problem,
         // Add data
         worksheet.Cells[row, 1].Value = puma.Name;
         worksheet.Cells[row, 2].Value = problem.Name;
-        worksheet.Cells[row, 3].Value = puma.NDimension;
-        worksheet.Cells[row, 4].Value = puma.PF1;
-        worksheet.Cells[row, 5].Value = puma.PF2;
-        worksheet.Cells[row, 6].Value = puma.PF3;
-        worksheet.Cells[row, 7].Value = puma.L;
-        worksheet.Cells[row, 8].Value = puma.U;
-        worksheet.Cells[row, 9].Value = puma.Alpha;
-        worksheet.Cells[row, 10].Value = puma.NIterations;
-        worksheet.Cells[row, 11].Value = puma.Population;
+        worksheet.Cells[row, 3].Value = puma.dimensions;
+        worksheet.Cells[row, 4].Value = puma.pf1;
+        worksheet.Cells[row, 5].Value = puma.pf2;
+        worksheet.Cells[row, 6].Value = puma.pf3;
+        worksheet.Cells[row, 7].Value = puma.l;
+        worksheet.Cells[row, 8].Value = puma.u;
+        worksheet.Cells[row, 9].Value = puma.a;
+        worksheet.Cells[row, 10].Value = puma.iterations;
+        worksheet.Cells[row, 11].Value = puma.population;
         worksheet.Cells[row, 12].Value = endPosition;
         worksheet.Cells[row, 13].Value = endSD;
         worksheet.Cells[row, 14].Value = endCoeff;
@@ -198,11 +202,13 @@ static void printEndPuma(double[] fbest, double[][] xbest, TestFunction problem,
         package.Save();
     }
 
-    Console.Write($"{puma.Name}, {problem.Name}, {puma.NDimension}, {puma.PF1}, {puma.PF2}, {puma.PF3}, {puma.L}, {puma.U}, {puma.Alpha}, {puma.NIterations}, {puma.Population} ");
+   
+
+    Console.Write($"{puma.Name}, {problem.Name}, {puma.dimensions}, {puma.pf1}, {puma.pf2}, {puma.pf3}, {puma.l}, {puma.u}, {puma.a}, {puma.iterations}, {puma.population} ");
     Console.Write($"{endPosition},{endSD}, {endCoeff}, {fbest[best_index]}, {sd}, {changeCoeff}% \n");
 }
 
-static void printEndWolf(double[] fbest, double[][] xbest, TestFunction problem, GreyWolfOptimizer puma)
+static void printEndWolf(double[] fbest, double[][] xbest, IFunction problem, GreyWolfOptimization wolf  )
 {
     double avg = fbest.Average();
     double sumSquare = fbest.Select(val => (val - avg) * (val - avg)).Sum();
@@ -294,11 +300,11 @@ static void printEndWolf(double[] fbest, double[][] xbest, TestFunction problem,
         int row = worksheet.Dimension.End.Row + 1;
 
         // Add data
-        worksheet.Cells[row, 1].Value = puma.Name;
+        worksheet.Cells[row, 1].Value  = wolf.Name;
         worksheet.Cells[row, 2].Value = problem.Name;
-        worksheet.Cells[row, 3].Value = puma.NDimension;
-        worksheet.Cells[row, 4].Value = puma.NIterations;
-        worksheet.Cells[row, 5].Value = puma.Population;
+        worksheet.Cells[row, 3].Value  = wolf.dimensions;
+        worksheet.Cells[row, 4].Value = wolf.iterations;
+        worksheet.Cells[row, 5].Value = wolf.population;
         worksheet.Cells[row, 6].Value = endPosition;
         worksheet.Cells[row, 7].Value = endSD;
         worksheet.Cells[row, 8].Value = endCoeff;
@@ -309,7 +315,7 @@ static void printEndWolf(double[] fbest, double[][] xbest, TestFunction problem,
         package.Save();
     }
 
-    Console.Write($"{puma.Name}, {problem.Name}, {puma.NDimension},  {puma.NIterations}, {puma.Population} ");
+    Console.Write($"{wolf.Name}, {problem.Name}, {wolf.dimensions},{ wolf.iterations}, {wolf.population} ");
     Console.Write($"{endPosition},{endSD}, {endCoeff}, {fbest[best_index]}, {sd}, {changeCoeff}% \n");
 }
 
@@ -320,10 +326,9 @@ int[] D = { 2, 5, 10, 30};
 
 
 
-//for (int h = 0; h < D.Length; h++)
-//{
+
     var prblm = new Beale();
-    //var optimizer = new PO(100, 100, prblm.UpperBoundaries, prblm.LowerBoundaries, prblm.function, $"{prblm.Name}");
+  
 
     for (int j = 0; j < N.Length; j++)
     {
@@ -331,56 +336,102 @@ int[] D = { 2, 5, 10, 30};
         {
             double[] fbests = new double[10];
             double[][] xbests = new double[10][];
-            var optimizer = new PO(I[k], N[j], prblm.UpperBoundaries, prblm.LowerBoundaries, prblm.function, $"{prblm.Name}");
-            //var optimizer = new GreyWolfOptimizer(prblm.function, N[j], I[k], prblm.UpperBoundaries, prblm.LowerBoundaries);
-            for (int i = 0; i < 10; i++)
+        var algorithm = new PumaOptimization();
+        double[] parameters = { N[j], I[k], D[0], algorithm.pf1, algorithm.pf2, algorithm.pf3, algorithm.l, algorithm.u, algorithm.a };
+        
+        
+        
+
+
+             for (int i = 0; i < 10; i++)
             {
-                optimizer = new PO(I[k], N[j], prblm.UpperBoundaries, prblm.LowerBoundaries, prblm.function, $"{prblm.Name}");
-                fbests[i] = optimizer.Solve();
-                xbests[i] = optimizer.XBest;
-            }
-            printEndPuma(fbests, xbests, prblm, optimizer);
+            algorithm.Solve(prblm.Function, prblm.domain(), prblm.Name, parameters);
+            fbests[i] = algorithm.Fbest;
+            xbests[i] = algorithm.Xbest;
+        }
+            printEndPuma(fbests, xbests, prblm, algorithm);
         }
     }
-   // }
 
-    double[] pf1 = { 0.2, 0.5, 0.8 };
-    double[] pf2 = { 0.2, 0.5, 0.8 };
-    double[] pf3 = { 0.1, 0.3, 0.5 };
-    double[] U = { 0.2, 0.4, 0.6 };
-    double[] L = { 0.5, 0.7, 0.9 };
-    int[] ALPHA = { 1, 2, 3 };
-    var problem =new Beale();
-    foreach (var p1 in pf1)
+
+double[] pf1 = { 0.2, 0.5, 0.8 };
+double[] pf2 = { 0.2, 0.5, 0.8 };
+double[] pf3 = { 0.1, 0.3, 0.5 };
+double[] U = { 0.2, 0.4, 0.6 };
+double[] L = { 0.5, 0.7, 0.9 };
+int[] ALPHA = { 1, 2, 3 };
+var problem = new Beale();
+
+
+
+
+void solve_alogrithm(IOptimizationAlgorithm algorithm, double[] P1 = null, double[]P2=null, double[] P3 = null , double[]P4 = null, double[]P5 = null, double[] P6=null)
+{
+    P1 ??= new Double[] { 1 };
+    P2 ??= new Double[] { 1 };
+    P3 ??= new Double[] { 1 };
+    P4 ??= new Double[] { 1 };
+    P5 ??= new Double[] { 1 };
+    P6 ??= new Double[] { 1 };
+
+    bool is_running = true;
+    
+    int[] N = { 10, 20, 40, 80 };
+    int[] I = { 5, 10, 20, 40, 60, 80 };
+    int[] D = { 2, 5, 10, 30 };
+
+    async Task WaitWhile()
     {
-        foreach (var p2 in pf2)
+        while (!is_running)
         {
-            foreach (var p3 in pf3)
+            await Task.Delay(100);
+        }
+
+    }
+     var problem = new Beale();
+
+    double[] fbests = new double[10];
+    double[][] xbests = new double[10][];
+   // algorithm.Solve(problem.Function, problem.domain() as double[], problem.Name, [N[0], I[0]]);                       
+
+
+    
+
+
+}
+
+
+
+
+/*for (int j = 0; j < pf1.Length; j++)
+{
+    for (int k = 0; k < pf2.Length; k++)
+    {
+        for (int l = 0; l < pf3.Length; l++)
+        {
+            for (int m = 0; m < U.Length; m++)
             {
-                foreach (var u in U)
+                for (int n = 0; n < L.Length; n++)
                 {
-                    foreach (var l in L)
+                    for (int o = 0; o < ALPHA.Length; o++)
                     {
-                        foreach (var a in ALPHA)
+                        double[] fbests = new double[10];
+                        double[][] xbests = new double[10][];
+                        var optimizer = new PO(I[1], N[1], problem.UpperBoundaries, problem.LowerBoundaries, problem.function, $"{problem.Name}", pf1[j], pf2[k], pf3[l], U[m], L[n], ALPHA[o]);
+                        for (int i = 0; i < 10; i++)
                         {
-                            double[] fbests = new double[10];
-                            double[][] xbests = new double[10][];
-                            var optimizer = new PO(I[1], N[1], problem.UpperBoundaries, problem.LowerBoundaries, problem.function, $"{problem.Name}", p1, p2, p3, u, l, a);
-                            for (int i = 0; i < 10; i++)
-                            {
-                                optimizer = new PO(I[1], N[1], problem.UpperBoundaries, problem.LowerBoundaries, problem.function, $"{problem.Name}", p1, p2, p3, u, l, a);
-                                fbests[i] = optimizer.Solve();
-                                xbests[i] = optimizer.XBest;
-                            }
-                            printEndPuma(fbests, xbests, problem, optimizer);
+                            optimizer = new PO(I[1], N[1], problem.UpperBoundaries, problem.LowerBoundaries, problem.function, $"{problem.Name}", pf1[j], pf2[k], pf3[l], U[m], L[n], ALPHA[o]);
+                            fbests[i] = optimizer.Solve();
+                            xbests[i] = optimizer.XBest;
                         }
+                        printEndPuma(fbests, xbests, problem, optimizer);
                     }
                 }
+
             }
         }
     }
 
-
-
+}*/
 
 

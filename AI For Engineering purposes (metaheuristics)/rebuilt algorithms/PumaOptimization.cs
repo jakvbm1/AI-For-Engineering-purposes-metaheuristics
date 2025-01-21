@@ -217,20 +217,21 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
     internal class PumaOptimization : IOptimizationAlgorithm
     {
-        private string name = "Puma Optimization Algorithm";
-        private double fbest;
-        private double[] xbest;
-        private ParamInfo[] paramInfo;
-        private int n_call = 0;
-        private double pf1;
-        private double pf2;
-        private double pf3;
-        private double l;
-        private double u;
-        private int a;
-        private int dimensions;
-        private int population;
-        private int iterations;
+        public string name = "Puma Optimization Algorithm";
+        public double fbest { get; set; }
+        public double[] xbest { get; set; }
+        public ParamInfo[] paramInfo { get; set; }
+        public int n_call = 0;
+        public double pf1 { get; set; }
+        public double pf2 { get; set; }
+        public double pf3 { get; set; }
+        public double l {  get; set; } 
+        public double u { get; set; }
+        public int a { get; set; }
+        public int dimensions { get; set; }
+        public int population { get; set; }
+        public int iterations { get; set; }
+        
         private Random rnd = new Random();
         private int currentIteration = 0;
 
@@ -256,8 +257,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public string Name { get => name; set => name = value; }
         public ParamInfo[] ParamInfo { get => paramInfo; set => paramInfo = value; }
-        public IStateWriter writer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IStateReader reader { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IStateWriter writer { get; set; }
+        public IStateReader reader { get; set ; }
         public IGeneratePDFReport pdfReportGenerator { get => pdfReport; set => pdfReport = value; }
         public IGenerateTextReport stringReportGenerator { get => textReport; set => textReport = value; }
         public double[] Xbest { get => xbest; set => xbest = value; }
@@ -277,6 +278,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
             l = parameters[6];
             u = parameters[7];
             a = (int)parameters[8];
+
+            xbest = new double[dimensions]; 
 
             var Pumas = new Puma[population];
 
@@ -347,7 +350,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 }
                 fbest = Pumas[0].Fitness;
                 writer = new PumaStateWriter(currentIteration, population, dimensions, iterations, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
-                writer.SaveToFileStateOfAlgorithm("");
+                writer.SaveToFileStateOfAlgorithm("C:\\Users\\MSI\\Desktop\\");
             }
 
             Seq_Cost_Explore[0] = Math.Abs(InitialFBest - Costs_Explor[0]); // Eq(5)
@@ -479,7 +482,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                     Score_Exploit = (Mega_Exploit * F1_Exploit) + (Mega_Exploit * F2_Exploit) + (lmn_Exploit * F3_Exploit);  // Eq(19)
                 }
                 writer = new PumaStateWriter(currentIteration, population, dimensions, iterations, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
-                writer.SaveToFileStateOfAlgorithm("");
+                writer.SaveToFileStateOfAlgorithm("C:\\Users\\MSI\\Desktop\\");
             }
             stringReportGenerator = new PumaTextReport(functionName, fbest, xbest, pf1, pf2, pf3, l, u, a, iterations, population, dimensions);
             pdfReportGenerator = new PumaPDFReport(functionName, fbest, xbest, pf1, pf2, pf3, l, u, a, iterations, population, dimensions);

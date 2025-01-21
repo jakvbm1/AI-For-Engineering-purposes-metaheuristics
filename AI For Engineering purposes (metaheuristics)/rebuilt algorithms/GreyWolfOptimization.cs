@@ -1,5 +1,4 @@
 ﻿using AI_For_Engineering_purposes__metaheuristics_.Interfaces;
-using AI_For_Engineering_purposes__metaheuristics_.Metaheuristics;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using System;
@@ -151,19 +150,19 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
     internal class GreyWolfOptimization : IOptimizationAlgorithm
     {
-        private int nCall = 0;
-        private double fbest;
-        private double[] xbest;
-        private string name = "Grey Wolf Optimization Algorithm";
-        private ParamInfo[] paramInfo;
+        public int nCall = 0;
+        public double fbest;
+        public double[] xbest;
+        public string name = "Grey Wolf Optimization Algorithm";
+        public ParamInfo[] paramInfo;
 
-        private int currentIteration;
-        private  int iterations;
-        private  int population;
-        private  int dimensions;
-        private  Wolf[] Wolves;
-        private  fitnessFunction FitnessFunction;
-        private  Random rnd = new Random();
+        public int currentIteration;
+        public  int iterations;
+        public  int population;
+        public  int dimensions;
+        public  Wolf[] Wolves;
+        public  fitnessFunction FitnessFunction;
+        public  Random rnd = new Random();
 
         private IGenerateTextReport textReport;
         private IGeneratePDFReport pdfReport;
@@ -247,7 +246,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 Xbest = alpha.Position;
                 Fbest = alpha.Fitness;
                 writer = new WolfStateWriter(population, dimensions, iterations, currentIteration, nCall, Wolves, functionName);
-                writer.SaveToFileStateOfAlgorithm("");
+                writer.SaveToFileStateOfAlgorithm("C:\\Users\\MSI\\Desktop\\");
             }
 
             NumberOfEvaluationFitnessFunction += population;

@@ -10,7 +10,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Interfaces
     {
         public fitnessFunction Function { get; }
 
-        public float[,] domain(int dimension = 2);
+        public double[,] domain(int dimension = 2);
 
         public string Name { get; }
 
@@ -23,9 +23,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Interfaces
             return a;
         }
 
-        public static float[,] domainGenerator( float upper, float lower, int dimension = 2) 
+        public static double[,] domainGenerator( float upper, float lower, int dimension = 2) 
         {
-            float[, ] domain = new float[2, dimension];
+            double [, ] domain = new double[2, dimension];
             for (int i = 0; i < dimension; i++) 
             {
                 domain[0, i] = lower;

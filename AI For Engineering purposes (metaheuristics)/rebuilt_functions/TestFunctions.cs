@@ -15,7 +15,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
 
         public bool IsMultiDimensional => false;
 
-        public float[,] domain(int dimension = 2)
+        public double[,] domain(int dimension = 2)
         {
             if (dimension != 2)
             {
@@ -55,7 +55,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
             return sum;
         }
 
-        public float[,] domain(int dimension = 2)
+        public double[,] domain(int dimension = 2)
         {
             return IFunction.domainGenerator(5.12f, -5.12f, dimension);
         }
@@ -79,7 +79,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
             return 10 * n + sum;
         }
 
-        public float[,] domain(int dimension = 2)
+        public double[,] domain(int dimension = 2)
         {
             return IFunction.domainGenerator(5.12f, -5.12f, dimension);
         }
@@ -105,7 +105,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
             }
             return sum;
         }
-        public float[,] domain(int dimension = 2)
+        public double[,] domain(int dimension = 2)
         {
             return IFunction.domainGenerator(5.12f, -5.12f, dimension);
         }
@@ -129,7 +129,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
             return sum;
         }
 
-        public float[,] domain(int dimension = 2)
+        public double[,] domain(int dimension = 2)
         {
             return IFunction.domainGenerator(10, -10, dimension);
         }
@@ -148,7 +148,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
             return -(args[1] + 47) * Math.Sin(Math.Sqrt(Math.Abs((args[0] / 2) + (args[1] + 47)))) - args[0] * Math.Sin(Math.Sqrt(Math.Abs(args[0] + (args[1] + 47))));
         }
 
-        public float[,] domain(int dimension = 2)
+        public double[,] domain(int dimension = 2)
         {
             if (dimension != 2)
             {
@@ -176,7 +176,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
             return Math.Pow(1.4 - args[0] + args[0] * args[1], 2) + Math.Pow(2.25 - args[0] + args[0] * args[1] * args[1], 2) + Math.Pow(2.625 - args[0] + args[0] * Math.Pow(args[1], 3), 2);
         }
 
-        public float[,] domain(int dimension = 2)
+        public double[,] domain(int dimension = 2)
         {
             if (dimension != 2)
             {
@@ -208,7 +208,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
                 return 100 * Math.Sqrt(Math.Abs(args[1] - 0.01 * args[0] * args[0])) + 0.01 * Math.Abs(args[0] + 10);
             }
 
-            public float[,] domain(int dimension = 2)
+            public double[,] domain(int dimension = 2)
             {
                 if (dimension != 2)
                 {
@@ -217,7 +217,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
 
                 else
                 {
-                    float[,] domain = new float[2, 2];
+                    double[,] domain = new double[2, 2];
                     domain[0, 0] = -15;
                     domain[0, 1] = -3;
                     domain[1, 0] = -5;
@@ -240,7 +240,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
                 return Math.Pow(args[0] * args[0] + args[1] - 11, 2) + Math.Pow(args[0] + args[1] * args[1] - 7, 2);
             }
 
-            public float[,] domain(int dimension = 2)
+            public double[,] domain(int dimension = 2)
             {
                 if (dimension != 2)
                 {

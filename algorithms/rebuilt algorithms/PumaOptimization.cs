@@ -30,20 +30,22 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         double pf1, pf2, pf3, l, u;
         int a, iteration, population, dimension;
 
-        public PumaPDFReport(string functionName, double fBest, double[] xBest, double pf1, double pf2, double pf3, double l, double u, int a, int iteration, int population, int dimension)
+        public PumaPDFReport(string functionName, double fBest, double[] xBest, double[] parameters)
         {
             this.functionName = functionName;
             this.fBest = fBest;
             this.xBest = xBest;
-            this.pf1 = pf1;
-            this.pf2 = pf2;
-            this.pf3 = pf3;
-            this.l = l;
-            this.u = u;
-            this.a = a;
-            this.iteration = iteration;
-            this.population = population;
-            this.dimension = dimension;
+            this.population = (int)parameters[0];
+            this.iteration = (int)parameters[1];
+            this.dimension = (int)parameters[2];
+            this.pf1 = parameters[3];
+            this.pf2 = parameters[4];
+            this.pf3 = parameters[5];
+            this.l = parameters[6];
+            this.u = parameters[7];
+            this.a = (int)parameters[8];
+
+
         }
 
         public void GenerateReport(string path)
@@ -76,20 +78,22 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         private string report;
 
-        public PumaTextReport(string functionName, double fBest, double[] xBest, double pf1, double pf2, double pf3, double l, double u, int a, int iteration, int population, int dimension)
+        public PumaTextReport(string functionName, double fBest, double[] xBest, double[] parameters)
         {
             this.functionName = functionName;
             this.fBest = fBest;
             this.xBest = xBest;
-            this.pf1 = pf1;
-            this.pf2 = pf2;
-            this.pf3 = pf3;
-            this.l = l;
-            this.u = u;
-            this.a = a;
-            this.iteration = iteration;
-            this.population = population;
-            this.dimension = dimension;
+            this.population = (int)parameters[0];
+            this.iteration = (int)parameters[1];
+            this.dimension = (int)parameters[2];
+            this.pf1 = parameters[3];
+            this.pf2 = parameters[4];
+            this.pf3 = parameters[5];
+            this.l = parameters[6];
+            this.u = parameters[7];
+            this.a = (int)parameters[8];
+            setReport();
+
 
         }
 
@@ -215,7 +219,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
     }
 
 
-    internal class PumaOptimization : IOptimizationAlgorithm
+    public class PumaOptimization : IOptimizationAlgorithm
     {
         public string name = "Puma Optimization Algorithm";
         public double fbest { get; set; }
@@ -235,8 +239,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         private Random rnd = new Random();
         private int currentIteration = 0;
 
-        private IGenerateTextReport textReport;
-        private IGeneratePDFReport pdfReport;
+        public IGenerateTextReport textReport;
+        public IGeneratePDFReport pdfReport;
 
         public PumaOptimization()
         {
@@ -484,8 +488,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 writer = new PumaStateWriter(currentIteration, population, dimensions, iterations, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
                 writer.SaveToFileStateOfAlgorithm("C:\\Users\\MSI\\Desktop\\");
             }
-            stringReportGenerator = new PumaTextReport(functionName, fbest, xbest, pf1, pf2, pf3, l, u, a, iterations, population, dimensions);
-            pdfReportGenerator = new PumaPDFReport(functionName, fbest, xbest, pf1, pf2, pf3, l, u, a, iterations, population, dimensions);
+          stringReportGenerator = new PumaTextReport(functionName, fbest, xbest, parameters);
+            Console.WriteLine(stringReportGenerator.ReportString);
+          pdfReportGenerator = new PumaPDFReport(functionName, fbest, xbest, parameters);
         }
 
         private void boundaryControl(ref double[] args, double[,] domain)

@@ -10,4 +10,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="AI For Engineering purposes %28metaheuristics%29">
+      <HintPath>..\algorithms\bin\Debug\net8.0\AI For Engineering purposes (metaheuristics).dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

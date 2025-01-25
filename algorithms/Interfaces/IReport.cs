@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace AI_For_Engineering_purposes__metaheuristics_.Interfaces
 {
-    internal interface IGeneratePDFReport
+    public interface IGeneratePDFReport
     {
         void GenerateReport(string path);
     }
 
-    interface IGenerateTextReport
+   public interface IGenerateTextReport
     {
         string ReportString { get; set; }
     }

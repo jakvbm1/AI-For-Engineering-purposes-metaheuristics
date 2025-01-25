@@ -23,7 +23,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
     public class WolfPDFReport : IGeneratePDFReport
     {
-        private string functionName;
+        
+        string functionName;
         private int population;
         private int dimension;
         private int iteration;

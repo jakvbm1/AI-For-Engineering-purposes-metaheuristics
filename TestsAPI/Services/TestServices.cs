@@ -1,5 +1,8 @@
 ﻿using TestsAPI.Model;
-
+using AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms;
+using AI_For_Engineering_purposes__metaheuristics_;
+using AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions;
+using AI_For_Engineering_purposes__metaheuristics_.Interfaces;
 
 namespace TestsAPI.Services
 {
@@ -21,6 +24,14 @@ namespace TestsAPI.Services
         public Test StartTest(Guid id) { 
             var test = _tests.FirstOrDefault(x => x.Id == id);
             if (test != null) test.Status = "running";
+            var puma = new PumaOptimization();
+            double[] parameters = new double[puma.ParamInfo.Length];
+            for (int i = 0; i < puma.ParamInfo.Length; i++)
+            {
+                parameters[i] = puma.ParamInfo[i].DefaultValue;
+            }
+            
+            
             return test;
         }
         public Test StopTest(Guid id)

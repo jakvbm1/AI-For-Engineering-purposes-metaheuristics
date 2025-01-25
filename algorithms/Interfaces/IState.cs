@@ -8,12 +8,12 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Interfaces
 {
     public delegate double fitnessFunction(params double[] args);
 
-    interface IStateWriter
+    public interface IStateWriter
     {
         void SaveToFileStateOfAlgorithm(string path);
     }
 
-    interface IStateReader
+    public interface IStateReader
     {
         void LoadFromFileStateOfAlgorithm(string path);
     }

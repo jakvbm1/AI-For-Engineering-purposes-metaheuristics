@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace AI_For_Engineering_purposes__metaheuristics_.Interfaces
 {
-    class ParamInfo
+    public class ParamInfo
     {
-        string Name { get; set; }
-        string Description { get; set; }
-        double UpperBoundary { get; set; }
-        double LowerBoundary { get; set; }
-        double DefaultValue { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public double UpperBoundary { get; set; }
+        public double LowerBoundary { get; set; }
+        public double DefaultValue { get; set; }
 
         public ParamInfo(string name, string description, double upperBoundary, double lowerBoundary, double defaultValue)
         {
@@ -24,14 +24,14 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Interfaces
         }
     }
 
-    internal interface IOptimizationAlgorithm
+    public interface IOptimizationAlgorithm
     {
         string Name { get; set; }
         ParamInfo[] ParamInfo { get; set; }
         IStateWriter writer { get; set; }
         IStateReader reader { get; set; }
         IGeneratePDFReport pdfReportGenerator { get; set; }
-        IGenerateTextReport stringReportGenerator { get; set; }
+       public IGenerateTextReport stringReportGenerator { get; set; }
         double[] Xbest { get; set; }
         double Fbest { get; set; }
         int NumberOfEvaluationFitnessFunction {  get; set; }

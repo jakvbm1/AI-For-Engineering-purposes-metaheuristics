@@ -162,7 +162,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
         } 
     }
 
-    class Beale : IFunction
+    public class Beale : IFunction
     {
 
         public string Name => "Beale";

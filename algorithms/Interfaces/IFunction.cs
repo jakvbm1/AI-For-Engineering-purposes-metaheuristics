@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AI_For_Engineering_purposes__metaheuristics_.Interfaces
 {
-    interface IFunction
+    public interface IFunction
     {
         public fitnessFunction Function { get; }
 

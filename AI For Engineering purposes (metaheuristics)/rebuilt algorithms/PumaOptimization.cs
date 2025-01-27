@@ -134,8 +134,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         {
             this.currentIteration = currentIteration;
             this.populationSize = populationSize;
-            this.dimension = dimension;
             this.iterations = iterations;
+            this.dimension = dimension;
             this.pf1 = pf1;
             this.pf2 = pf2;
             this.pf3 = pf3;
@@ -153,8 +153,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
             {
                 sw.WriteLine(functionName);
                 sw.WriteLine(populationSize);
-                sw.WriteLine(dimension);
                 sw.WriteLine(iterations);
+                sw.WriteLine(dimension);
+                
 
                 sw.WriteLine(currentIteration.ToString());
                 sw.WriteLine(numberOfEvaluations.ToString());
@@ -189,8 +190,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 {
                     string functionName = sr.ReadLine();
                     int population = int.Parse(sr.ReadLine());
-                    int dimension = int.Parse(sr.ReadLine());
                     int iterations = int.Parse(sr.ReadLine());
+                    int dimension = int.Parse(sr.ReadLine());
                     int currentIteration = int.Parse(sr.ReadLine());
                     int n_call = int.Parse(sr.ReadLine());
                     double pf1 = double.Parse(sr.ReadLine());
@@ -491,6 +492,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
           stringReportGenerator = new PumaTextReport(functionName, fbest, xbest, parameters);
             Console.WriteLine(stringReportGenerator.ReportString);
           pdfReportGenerator = new PumaPDFReport(functionName, fbest, xbest, parameters);
+          // pdfReportGenerator.GenerateReport("C:\\Users\\MSI\\Desktop\\AI-For-Engineering-purposes-metaheuristics");
         }
 
         private void boundaryControl(ref double[] args, double[,] domain)

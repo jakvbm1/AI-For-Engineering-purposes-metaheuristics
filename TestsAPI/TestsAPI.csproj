@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AI For Engineering purposes (metaheuristics)\AI For Engineering purposes (metaheuristics).csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="AI For Engineering purposes %28metaheuristics%29">
       <HintPath>..\algorithms\bin\Debug\net8.0\AI For Engineering purposes (metaheuristics).dll</HintPath>
     </Reference>

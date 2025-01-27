@@ -227,7 +227,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
             }
         }
 
-        class Himmelblaus : IFunction
+        public class Himmelblaus : IFunction
         {
             public string Name => "Himmelblau's function";
 

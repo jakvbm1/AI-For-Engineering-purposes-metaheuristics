@@ -1,8 +1,10 @@
 ﻿using TestsAPI.Model;
-using AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms;
-using AI_For_Engineering_purposes__metaheuristics_;
-using AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions;
 using AI_For_Engineering_purposes__metaheuristics_.Interfaces;
+using AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms;
+using AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions;
+using AI_For_Engineering_purposes__metaheuristics_.solver;
+
+
 
 namespace TestsAPI.Services
 {
@@ -25,11 +27,16 @@ namespace TestsAPI.Services
             var test = _tests.FirstOrDefault(x => x.Id == id);
             if (test != null) test.Status = "running";
             var puma = new PumaOptimization();
-            double[] parameters = new double[puma.ParamInfo.Length];
-            for (int i = 0; i < puma.ParamInfo.Length; i++)
+            var wolf = new GreyWolfOptimization();
+            double[] parameters = new double[wolf.ParamInfo.Length];
+            for (int i = 0; i < wolf.ParamInfo.Length; i++)
             {
-                parameters[i] = puma.ParamInfo[i].DefaultValue;
+                parameters[i] = wolf.ParamInfo[i].DefaultValue;
             }
+            Solver.SolveAlgorithm(new GreyWolfOptimization(), new Beale(), parameters);
+        
+            
+
             
             
             return test;

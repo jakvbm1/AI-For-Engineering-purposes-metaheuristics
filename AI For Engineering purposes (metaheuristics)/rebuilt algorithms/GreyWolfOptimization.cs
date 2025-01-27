@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 {
-    class Wolf
+    public class Wolf
     {
         public double[] Position;
         public double Fitness;
@@ -149,7 +149,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         }
     }
 
-    internal class GreyWolfOptimization : IOptimizationAlgorithm
+    public class GreyWolfOptimization : IOptimizationAlgorithm
     {
         public int nCall = 0;
         public double fbest;
@@ -172,15 +172,15 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         {
             ParamInfo iteration = new ParamInfo("iteration", "number of iterations", 100000, 1, 10);
             ParamInfo population = new ParamInfo("population", "size of population", 100000, 1, 10);
-            ParamInfo dimensions = new ParamInfo("dimensions", "number of dimensions", 100000, 1, 10);
+            ParamInfo dimensions = new ParamInfo("dimensions", "number of dimensions", 100000, 1, 2);
 
             paramInfo = new ParamInfo[] {iteration, population, dimensions};
         }
 
         public string Name { get => name; set => name = value; }
         public ParamInfo[] ParamInfo { get => paramInfo; set => paramInfo = value; }
-        public IStateWriter writer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IStateReader reader { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IStateWriter writer { get; set; }
+        public IStateReader reader { get; set; }
         public IGeneratePDFReport pdfReportGenerator { get => pdfReport; set => pdfReport = value; }
         public IGenerateTextReport stringReportGenerator { get => textReport; set =>textReport = value; }
         public double[] Xbest { get => xbest; set => xbest = value; }
@@ -206,6 +206,12 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
                 for (int j = 0; j < dimensions; j++)
                 {
+                    if (domain.GetLength(0) < 2 || domain.GetLength(1) < dimensions)
+                    {
+                        Console.WriteLine(domain.GetLength(0));
+                        Console.WriteLine(domain.GetLength(1));
+                        throw new ArgumentException("domain array must have at least 2 rows and 'dimensions' columns.");
+                    }
                     Wolves[i].Position[j] = domain[0, j] + rnd.NextDouble() * (domain[1, j] - domain[0, j]);
                 }
             }
@@ -213,7 +219,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
             for (int i = 0; i < this.population; i++)
             {
-                Wolves[i].Fitness = CalculateFitnessFunction(Wolves[i].Position);
+                Wolves[i].Fitness = CalculateFitnessFunction(Wolves[i].Position, f);
             }
 
             (var alpha, var beta, var delta) = GetAlphaBetaDelta();
@@ -239,7 +245,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                             val = domain[1, parameterIndex];
 
                         Wolves[wolfIndex].Position[parameterIndex] = val;
-                        Wolves[wolfIndex].Fitness = CalculateFitnessFunction(Wolves[wolfIndex].Position);
+                        Wolves[wolfIndex].Fitness = CalculateFitnessFunction(Wolves[wolfIndex].Position, f);
                     }
                 }
 
@@ -253,9 +259,13 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
             NumberOfEvaluationFitnessFunction += population;
             stringReportGenerator = new WolfTextReport(functionName, population, dimensions, iterations, nCall, Fbest, xbest);
             pdfReportGenerator = new WolfPDFReport(functionName, population, dimensions, iterations, nCall, Fbest, xbest);
+            
+            Console.WriteLine(stringReportGenerator.ReportString);
+            
+            //pdfReportGenerator.GenerateReport("C:\\Users\\MSI\\Desktop\\AI-For-Engineering-purposes-metaheuristics");
         }
 
-        private double CalculateFitnessFunction(double[] args)
+        private double CalculateFitnessFunction(double[] args, fitnessFunction FitnessFunction)
         {
             NumberOfEvaluationFitnessFunction++;
             return FitnessFunction(args);

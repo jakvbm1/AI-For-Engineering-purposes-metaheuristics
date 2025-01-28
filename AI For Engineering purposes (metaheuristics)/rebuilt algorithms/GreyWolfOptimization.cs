@@ -3,6 +3,7 @@ using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -156,7 +157,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public double[] xbest;
         public string name = "Grey Wolf Optimization Algorithm";
         public ParamInfo[] paramInfo;
-
+        public bool running { get; set; } = true;
         public int currentIteration;
         public  int iterations;
         public  int population;

@@ -12,6 +12,7 @@ namespace TestsAPI.Services
     {
         private readonly List<Test> _tests = [];
         private readonly Timer timer;
+        PumaOptimization puma = new PumaOptimization();
 
         public TestServices()
         {
@@ -26,15 +27,15 @@ namespace TestsAPI.Services
         public Test StartTest(Guid id) { 
             var test = _tests.FirstOrDefault(x => x.Id == id);
             if (test != null) test.Status = "running";
-            var puma = new PumaOptimization();
-            var wolf = new GreyWolfOptimization();
+           
+            var wolf = new PumaOptimization();
             double[] parameters = new double[wolf.ParamInfo.Length];
             for (int i = 0; i < wolf.ParamInfo.Length; i++)
             {
                 parameters[i] = wolf.ParamInfo[i].DefaultValue;
             }
-            Solver.SolveAlgorithm(new GreyWolfOptimization(), new Beale(), parameters);
-        
+            Solver.SolveAlgorithm(new PumaOptimization(), new Beale(), parameters);
+            
             
 
             
@@ -45,6 +46,7 @@ namespace TestsAPI.Services
         {
             var test = _tests.FirstOrDefault(t => t.Id == id);
             if (test != null) test.Status = "stopped";
+            puma.running = false;
             return test;
         }
         public Test GetStatus(Guid id)

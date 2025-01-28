@@ -35,6 +35,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Interfaces
         double[] Xbest { get; set; }
         double Fbest { get; set; }
         int NumberOfEvaluationFitnessFunction {  get; set; }
+        bool running { get; set; }
 
         void Solve(fitnessFunction f, double[,] domain, string functionName, params double[] parameters);
     }

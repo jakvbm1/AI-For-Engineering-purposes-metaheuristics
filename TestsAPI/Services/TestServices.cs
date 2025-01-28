@@ -34,19 +34,22 @@ namespace TestsAPI.Services
             {
                 parameters[i] = wolf.ParamInfo[i].DefaultValue;
             }
+            parameters[0] = 9999;
             Solver.SolveAlgorithm(new PumaOptimization(), new Beale(), parameters);
-            
-            
-
-            
-            
             return test;
         }
         public Test StopTest(Guid id)
         {
             var test = _tests.FirstOrDefault(t => t.Id == id);
             if (test != null) test.Status = "stopped";
-            puma.running = false;
+            PumaOptimization.running = false;
+            return test;
+        }
+        public Test ResumeTest(Guid id)
+        {
+            var test = _tests.FirstOrDefault(t => t.Id == id);
+            if (test != null) test.Status = "running";
+            PumaOptimization.running = true;
             return test;
         }
         public Test GetStatus(Guid id)

@@ -255,7 +255,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 public double l { get; set; }
                 public double u { get; set; }
                 public int a { get; set; }
-                public bool running { get; set; } = true;
+                public static bool running { get; set; } = true;
                 public int dimensions { get; set; }
                 public int population { get; set; }
                 public int iterations { get; set; }
@@ -404,15 +404,10 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                             xbest[i] = Pumas[0].Position[i];
                         }
                         fbest = Pumas[0].Fitness;
-                if (currentIteration == 1)
-                {
-                    Console.WriteLine("broke1");
-                    currentIteration++;
-                    running = false;
-                }
+                
                 writer = new PumaStateWriter(currentIteration, population, dimensions, iterations, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
                         writer.SaveToFileStateOfAlgorithm("C:\\Users\\MSI\\Desktop\\");
-                if (!running) { break; }
+                while (!running) Thread.Sleep(100);
             }
 
                     Seq_Cost_Explore[0] = Math.Abs(InitialFBest - Costs_Explor[0]); // Eq(5)
@@ -442,9 +437,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                     // Experienced Phase
                     for (; currentIteration < iterations; currentIteration++)
                     {
-                if (!running) {
-                    Console.WriteLine("break2");
-                    break; }
+               
                 bool SelectFlag;
                         double[] Count_select = new double[2];
 
@@ -549,7 +542,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                         
                         writer = new PumaStateWriter(currentIteration, population, dimensions, iterations, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
                         writer.SaveToFileStateOfAlgorithm("C:\\Users\\MSI\\Desktop\\");
-                            
+                while (!running) Thread.Sleep(100);
+
             }
                     stringReportGenerator = new PumaTextReport(functionName, fbest, xbest, parameters);
                     Console.WriteLine(stringReportGenerator.ReportString);

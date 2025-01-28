@@ -30,7 +30,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.main
             {
                 parameters[i] = wolf.ParamInfo[i].DefaultValue;
             }
-            
+            parameters[0] = 7200;
 
             Solver.SolveAlgorithm(new PumaOptimization(), new Beale(), parameters);
 

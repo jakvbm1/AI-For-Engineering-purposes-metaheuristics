@@ -40,6 +40,14 @@ namespace TestsAPI.Controllers
 
             return Ok(new { message = "Test zatrzymany.", test.Status });
         }
+        [HttpPost("resume/{id}")]
+        public IActionResult ResumeTest(Guid id)
+        {
+            var test = _testService.ResumeTest(id);
+            if (test == null) return NotFound("Test nie istnieje.");
+
+            return Ok(new { message = "Test wznowiony.", test.Status });
+        }
 
         [HttpGet("status/{id}")]
         public IActionResult GetStatus(Guid id)

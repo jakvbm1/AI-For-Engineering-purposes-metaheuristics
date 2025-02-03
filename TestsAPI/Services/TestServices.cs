@@ -2,7 +2,6 @@
 using AI_For_Engineering_purposes__metaheuristics_.Interfaces;
 using AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms;
 using AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions;
-using AI_For_Engineering_purposes__metaheuristics_.solver;
 
 
 
@@ -11,55 +10,54 @@ namespace TestsAPI.Services
     public class TestServices
     {
         private readonly List<Test> _tests = [];
-        private readonly Timer timer;
-        PumaOptimization puma = new PumaOptimization();
 
-        public TestServices()
+        public Test CreateTest(string algorithmName, string functionName, double[] parameters, int dimensions, int iterations)
         {
-           
-        }
-        public Test CreateTest(string algorithmName, string functionName, List<int> parameters)
-        {
-            var test = new Test{AlgorithmName = algorithmName, FunctionName = functionName, Parameters = parameters };
+            var algorithm = OptimizationAlgorithms.Algorithms.FirstOrDefault(a => a.Name == algorithmName);
+            var function = TestFunctions.Functions.FirstOrDefault(f => f.Name == functionName);
+
+            if (algorithm == null || function == null) throw new Exception("Algorithm or function not found");
+
+            algorithm.TargetIteration = iterations;
+            function.Dimensions = dimensions;
+            var test = new Test{ Algorithm = algorithm, Function = function, Parameters = parameters };
             _tests.Add(test);
             return test;
         }
         public Test StartTest(Guid id) { 
             var test = _tests.FirstOrDefault(x => x.Id == id);
-            if (test != null) test.Status = "running";
-           
-            var wolf = new PumaOptimization();
-            double[] parameters = new double[wolf.ParamInfo.Length];
-            for (int i = 0; i < wolf.ParamInfo.Length; i++)
-            {
-                parameters[i] = wolf.ParamInfo[i].DefaultValue;
-            }
-            parameters[0] = 9999;
-            Solver.SolveAlgorithm(new PumaOptimization(), new Beale(), parameters);
+
+            if (test == null) throw new Exception("Test not found");
+            if (test.Status == TestStatus.Running || test.Status == TestStatus.Pausing) throw new Exception("Test is already running");
+
+            test.Start();
+
             return test;
         }
         public Test StopTest(Guid id)
         {
             var test = _tests.FirstOrDefault(t => t.Id == id);
-            if (test != null) test.Status = "stopped";
-            PumaOptimization.running = false;
-            return test;
-        }
-        public Test ResumeTest(Guid id)
-        {
-            var test = _tests.FirstOrDefault(t => t.Id == id);
-            if (test != null) test.Status = "running";
-            PumaOptimization.running = true;
+
+            if (test == null) throw new Exception("Test not found");
+
+            test.Pause();
             return test;
         }
         public Test GetStatus(Guid id)
         {
-            return _tests.FirstOrDefault(t => t.Id == id);
+            var test = _tests.FirstOrDefault(t => t.Id == id);
+
+            if (test == null) throw new Exception("Test not found");
+
+            return test;
         }
         public object GetReport(Guid id)
         {
             var test = _tests.FirstOrDefault(t => t.Id == id);
-            return "report";
+
+            if (test == null) throw new Exception("Test not found");
+
+            return test.Algorithm.stringReportGenerator.ReportString;
         }
         private void RemoveOldTests(object state)
         {

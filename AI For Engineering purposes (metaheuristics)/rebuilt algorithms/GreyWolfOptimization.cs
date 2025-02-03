@@ -112,15 +112,15 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         private int dimension;
         private int iteration;
         private int numberOfEvaluations;
-        private int currentIteration;
+        private int CurrentIteration;
         Wolf[] wolves;
-        public WolfStateWriter(int population, int dimension, int iteration, int currentIteration, int numberOfEvaluations, Wolf[] wolves, string functionName)
+        public WolfStateWriter(int population, int dimension, int iteration, int CurrentIteration, int numberOfEvaluations, Wolf[] wolves, string functionName)
         {
             this.functionName = functionName;
             this.population = population;
             this.dimension = dimension;
             this.iteration = iteration;
-            this.currentIteration = currentIteration;
+            this.CurrentIteration = CurrentIteration;
             this.wolves = wolves;
             this.numberOfEvaluations = numberOfEvaluations;
         }
@@ -134,7 +134,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 sw.WriteLine(dimension);
                 sw.WriteLine(iteration);
 
-                sw.WriteLine(currentIteration.ToString());
+                sw.WriteLine(CurrentIteration.ToString());
                 sw.WriteLine(numberOfEvaluations.ToString());
                 foreach (Wolf p in wolves)
                 {
@@ -156,10 +156,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public double fbest;
         public double[] xbest;
         public string name = "Grey Wolf Optimization Algorithm";
-        public ParamInfo[] paramInfo;
-        public bool running { get; set; } = true;
-        public int currentIteration;
-        public  int iterations;
+        public ParamInfo[] paramInfo = [];
+        public bool Running { get; set; } = true;
         public  int population;
         public  int dimensions;
         public  Wolf[] Wolves;
@@ -169,14 +167,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         private IGenerateTextReport textReport;
         private IGeneratePDFReport pdfReport;
 
-        public GreyWolfOptimization()
-        {
-            ParamInfo iteration = new ParamInfo("iteration", "number of iterations", 100000, 1, 10);
-            ParamInfo population = new ParamInfo("population", "size of population", 100000, 1, 10);
-            ParamInfo dimensions = new ParamInfo("dimensions", "number of dimensions", 100000, 1, 2);
-
-            paramInfo = new ParamInfo[] {iteration, population, dimensions};
-        }
+        public int CurrentIteration { get; set; } = 0;
+        public int TargetIteration { get; set; } = 10;
 
         public string Name { get => name; set => name = value; }
         public ParamInfo[] ParamInfo { get => paramInfo; set => paramInfo = value; }
@@ -188,11 +180,17 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public double Fbest { get => fbest; set => fbest = value; }
         public int NumberOfEvaluationFitnessFunction { get => nCall; set => nCall = value; }
 
+        public GreyWolfOptimization()
+        {
+            ParamInfo population = new ParamInfo("population", "size of population", 100000, 1, 10);
+
+            paramInfo = new ParamInfo[] { population };
+        }
+
         public void Solve(fitnessFunction f, double[,] domain, string functionName, params double[] parameters)
         {
-            iterations = (int)parameters[0];
-            population = (int)parameters[1];
-            dimensions = (int)parameters[2];
+            dimensions = domain.GetLength(1);
+            population = (int)parameters[0];
 
             Wolves = new Wolf[population];
 
@@ -225,10 +223,10 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
             (var alpha, var beta, var delta) = GetAlphaBetaDelta();
 
-            for (; currentIteration < iterations; currentIteration++)
+            for (; CurrentIteration < TargetIteration && Running; CurrentIteration++)
             {
 
-                double a = 2.0 - currentIteration * (2.0 / iterations);
+                double a = 2.0 - CurrentIteration * (2.0 / TargetIteration);
 
                 for (int wolfIndex = 0; wolfIndex < population; wolfIndex++)
                 {
@@ -253,17 +251,14 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 (alpha, beta, delta) = GetAlphaBetaDelta();
                 Xbest = alpha.Position;
                 Fbest = alpha.Fitness;
-                writer = new WolfStateWriter(population, dimensions, iterations, currentIteration, nCall, Wolves, functionName);
-                writer.SaveToFileStateOfAlgorithm("C:\\Users\\MSI\\Desktop\\");
+                writer = new WolfStateWriter(population, dimensions, TargetIteration, CurrentIteration, nCall, Wolves, functionName);
             }
 
             NumberOfEvaluationFitnessFunction += population;
-            stringReportGenerator = new WolfTextReport(functionName, population, dimensions, iterations, nCall, Fbest, xbest);
-            pdfReportGenerator = new WolfPDFReport(functionName, population, dimensions, iterations, nCall, Fbest, xbest);
+            stringReportGenerator = new WolfTextReport(functionName, population, dimensions, TargetIteration, nCall, Fbest, xbest);
+            pdfReportGenerator = new WolfPDFReport(functionName, population, dimensions, TargetIteration, nCall, Fbest, xbest);
             
             Console.WriteLine(stringReportGenerator.ReportString);
-            
-            //pdfReportGenerator.GenerateReport("C:\\Users\\MSI\\Desktop\\AI-For-Engineering-purposes-metaheuristics");
         }
 
         private double CalculateFitnessFunction(double[] args, fitnessFunction FitnessFunction)

@@ -1,4 +1,5 @@
-﻿ using System;
+﻿using AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,11 +32,13 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Interfaces
         IStateWriter writer { get; set; }
         IStateReader reader { get; set; }
         IGeneratePDFReport pdfReportGenerator { get; set; }
-       public IGenerateTextReport stringReportGenerator { get; set; }
+        public IGenerateTextReport stringReportGenerator { get; set; }
         double[] Xbest { get; set; }
         double Fbest { get; set; }
         int NumberOfEvaluationFitnessFunction {  get; set; }
-        static bool running { get; set; }
+        bool Running { get; set; }
+        int CurrentIteration { get; set; }
+        int TargetIteration { get; set; }
 
         void Solve(fitnessFunction f, double[,] domain, string functionName, params double[] parameters);
     }

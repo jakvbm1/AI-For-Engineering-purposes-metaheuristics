@@ -10,11 +10,13 @@ namespace AI_For_Engineering_purposes__metaheuristics_.Interfaces
     {
         public fitnessFunction Function { get; }
 
-        public double[,] domain(int dimension = 2);
+        public double[,] domain();
 
         public string Name { get; }
 
         public bool IsMultiDimensional { get; }
+
+        public int Dimensions { set; get; }
 
         public static double[] FilledArray(int size, double value)
         {

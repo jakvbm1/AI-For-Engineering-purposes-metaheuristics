@@ -1,4 +1,5 @@
 ﻿using AI_For_Engineering_purposes__metaheuristics_.Interfaces;
+using AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,24 @@ using System.Threading.Tasks;
 
 namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
 {
+    public class TestFunctions
+    {
+        public static IFunction[] Functions
+        {
+            get => [
+                new BentCigar(),
+                new Rosenbrock(),
+                new Rastrigin(),
+                new Sphere(),
+                new UnknownFunction(),
+                new Eggholder(),
+                new Beale(),
+                new BukinN6(),
+                new Himmelblaus()
+            ];
+        }
+    }
+
     class BentCigar : IFunction
     {
         public string Name => "Bent Cigar";
@@ -15,9 +34,11 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
 
         public bool IsMultiDimensional => false;
 
-        public double[,] domain(int dimension = 2)
+        public int Dimensions { set; get; } = 2;
+
+        public double[,] domain()
         {
-            if (dimension != 2)
+            if (Dimensions != 2)
             {
                 throw new Exception("Funkcja jest jedynie dwuwymiarowa");
             }
@@ -46,6 +67,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
 
         public bool IsMultiDimensional => true;
 
+        public int Dimensions { set; get; } = 2;
+
         private double function(double[] args)
         {
             int n = args.Length;
@@ -55,9 +78,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
             return sum;
         }
 
-        public double[,] domain(int dimension = 2)
+        public double[,] domain()
         {
-            return IFunction.domainGenerator(5.12f, -5.12f, dimension);
+            return IFunction.domainGenerator(5.12f, -5.12f, Dimensions);
         }
     }
 
@@ -70,6 +93,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
 
         public bool IsMultiDimensional => true;
 
+        public int Dimensions { set; get; } = 2;
+
         private double function(double[] args)
         {
             int n = args.Length;
@@ -79,22 +104,21 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
             return 10 * n + sum;
         }
 
-        public double[,] domain(int dimension = 2)
+        public double[,] domain()
         {
-            return IFunction.domainGenerator(5.12f, -5.12f, dimension);
+            return IFunction.domainGenerator(5.12f, -5.12f, Dimensions);
         }
     }
 
     class Sphere : IFunction
     {
-
-        private int nDimension;
-
         public string Name => "Sphere";
 
         public fitnessFunction Function => function;
 
         public bool IsMultiDimensional => true;
+
+        public int Dimensions { set; get; } = 2;
 
         private double function(double[] args)
         {
@@ -105,9 +129,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
             }
             return sum;
         }
-        public double[,] domain(int dimension = 2)
+        public double[,] domain()
         {
-            return IFunction.domainGenerator(5.12f, -5.12f, dimension);
+            return IFunction.domainGenerator(5.12f, -5.12f, Dimensions);
         }
     }
 
@@ -120,6 +144,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
 
         public bool IsMultiDimensional => true;
 
+        public int Dimensions { set; get; } = 2;
         private double function(double[] args)
         {
             int n = args.Length;
@@ -129,9 +154,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
             return sum;
         }
 
-        public double[,] domain(int dimension = 2)
+        public double[,] domain()
         {
-            return IFunction.domainGenerator(10, -10, dimension);
+            return IFunction.domainGenerator(10, -10, Dimensions);
         }
     }
 
@@ -143,14 +168,16 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
 
         public bool IsMultiDimensional => false;
 
+        public int Dimensions { set; get; } = 2;
+
         private double function(double[] args)
         {
             return -(args[1] + 47) * Math.Sin(Math.Sqrt(Math.Abs((args[0] / 2) + (args[1] + 47)))) - args[0] * Math.Sin(Math.Sqrt(Math.Abs(args[0] + (args[1] + 47))));
         }
 
-        public double[,] domain(int dimension = 2)
+        public double[,] domain()
         {
-            if (dimension != 2)
+            if (Dimensions != 2)
             {
                 throw new Exception("Funkcja jest jedynie dwuwymiarowa");
             }
@@ -164,21 +191,21 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
 
     public class Beale : IFunction
     {
-
         public string Name => "Beale";
 
         public fitnessFunction Function => function;
 
         public bool IsMultiDimensional => false;
 
+        public int Dimensions { set; get; } = 2;
         private double function(double[] args)
         {
             return Math.Pow(1.4 - args[0] + args[0] * args[1], 2) + Math.Pow(2.25 - args[0] + args[0] * args[1] * args[1], 2) + Math.Pow(2.625 - args[0] + args[0] * Math.Pow(args[1], 3), 2);
         }
 
-        public double[,] domain(int dimension = 2)
+        public double[,] domain()
         {
-            if (dimension != 2)
+            if (Dimensions != 2)
             {
                 throw new Exception("Funkcja jest jedynie dwuwymiarowa");
             }
@@ -188,72 +215,73 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
                 return IFunction.domainGenerator(4.5f, -4.5f);
             }
         }
+    }
 
+    class BukinN6 : IFunction
+    {
 
-        class BukinN6 : IFunction
+        public double[] LowerBoundaries => new double[] { -15, -3 };
+
+        public double[] UpperBoundaries => new double[] { -5, 3 };
+
+        public string Name => "Bukin function N.6";
+
+        public fitnessFunction Function => function;
+
+        public bool IsMultiDimensional => false;
+
+        public int Dimensions { set; get; } = 2;
+
+        private double function(double[] args)
         {
-
-            public double[] LowerBoundaries => new double[] { -15, -3 };
-
-            public double[] UpperBoundaries => new double[] { -5, 3 };
-
-            public string Name => "Bukin function N.6";
-
-            public fitnessFunction Function => function;
-
-            public bool IsMultiDimensional => false;
-
-            private double function(double[] args)
-            {
-                return 100 * Math.Sqrt(Math.Abs(args[1] - 0.01 * args[0] * args[0])) + 0.01 * Math.Abs(args[0] + 10);
-            }
-
-            public double[,] domain(int dimension = 2)
-            {
-                if (dimension != 2)
-                {
-                    throw new Exception("Funkcja jest jedynie dwuwymiarowa");
-                }
-
-                else
-                {
-                    double[,] domain = new double[2, 2];
-                    domain[0, 0] = -15;
-                    domain[0, 1] = -3;
-                    domain[1, 0] = -5;
-                    domain[1, 0] = 3;
-                    return domain;
-                }
-            }
+            return 100 * Math.Sqrt(Math.Abs(args[1] - 0.01 * args[0] * args[0])) + 0.01 * Math.Abs(args[0] + 10);
         }
 
-        public class Himmelblaus : IFunction
+        public double[,] domain()
         {
-            public string Name => "Himmelblau's function";
-
-            public fitnessFunction Function => function;
-
-            public bool IsMultiDimensional => false;
-
-            private double function(double[] args)
+            if (Dimensions != 2)
             {
-                return Math.Pow(args[0] * args[0] + args[1] - 11, 2) + Math.Pow(args[0] + args[1] * args[1] - 7, 2);
+                throw new Exception("Funkcja jest jedynie dwuwymiarowa");
             }
 
-            public double[,] domain(int dimension = 2)
+            else
             {
-                if (dimension != 2)
-                {
-                    throw new Exception("Funkcja jest jedynie dwuwymiarowa");
-                }
-
-                else
-                {
-                    return IFunction.domainGenerator(5, -5);
-                }
+                double[,] domain = new double[2, 2];
+                domain[0, 0] = -15;
+                domain[0, 1] = -3;
+                domain[1, 0] = -5;
+                domain[1, 0] = 3;
+                return domain;
             }
-            //beale, bukin, himmelbau's,  bez eggholdera i BentCigara 
-
         }
+    }
+
+    public class Himmelblaus : IFunction
+    {
+        public string Name => "Himmelblau's function";
+
+        public fitnessFunction Function => function;
+
+        public bool IsMultiDimensional => false;
+
+        public int Dimensions { set; get; } = 2;
+        private double function(double[] args)
+        {
+            return Math.Pow(args[0] * args[0] + args[1] - 11, 2) + Math.Pow(args[0] + args[1] * args[1] - 7, 2);
+        }
+
+        public double[,] domain()
+        {
+            if (Dimensions != 2)
+            {
+                throw new Exception("Funkcja jest jedynie dwuwymiarowa");
+            }
+
+            else
+            {
+                return IFunction.domainGenerator(5, -5);
+            }
+        }
+        //beale, bukin, himmelbau's,  bez eggholdera i BentCigara 
     }
 }

@@ -1,6 +1,8 @@
 ﻿using AI_For_Engineering_purposes__metaheuristics_.Interfaces;
-using PdfSharp.Drawing;
-using PdfSharp.Pdf;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -20,6 +22,62 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public Puma(int dim)
         {
             Position = new double[dim];
+        }
+    }
+
+    public class PumaGeneratePdfFromTxt
+    {
+        public void GeneratePdfFromTxt(string pdfFilePath, string txtFilePath)
+        {
+            try
+            {
+                if (!File.Exists(txtFilePath))
+                {
+                    Console.WriteLine("Error: The specified TXT file does not exist.");
+                    return;
+                }
+
+                string[] lines = File.ReadAllLines(txtFilePath);
+
+                using (PdfWriter writer = new PdfWriter(pdfFilePath))
+                {
+                    using (PdfDocument pdf = new PdfDocument(writer))
+                    {
+                        Document document = new Document(pdf);
+
+                        int index = 1;
+                        bool newReport = true;
+
+                        foreach (var line in lines)
+                        {
+                            if (string.IsNullOrWhiteSpace(line))
+                            {
+                                newReport = true;
+                                document.Add(new Paragraph("\n"));
+                            }
+                            else
+                            {
+                                if (newReport)
+                                {
+                                    document.Add(new Paragraph($"Raport nr. {index++}")
+                                        .SetFontSize(14));
+                                    newReport = false;
+                                }
+
+                                document.Add(new Paragraph(line));
+                            }
+                        }
+
+                        document.Close();
+                    }
+                }
+
+                Console.WriteLine("PDF report generated successfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error generating PDF: {ex.Message}");
+            }
         }
     }
 
@@ -51,21 +109,52 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void GenerateReport(string path)
         {
-            PdfDocument document = new PdfDocument();
-            document.Info.Title = "Puma PDF Report";
+            string filePath = Path.Combine(path, "PO_PDF_Report.pdf");
 
-            PdfPage page = document.AddPage();
-            XGraphics gfx = XGraphics.FromPdfPage(page);
-            XFont font = new XFont("Arial", 12, XFontStyleEx.Regular);
+            try
+            {
+                using (PdfWriter writer = new PdfWriter(filePath))
+                {
+                    using (PdfDocument pdf = new PdfDocument(writer))
+                    {
+                        Document document = new Document(pdf);
 
-            gfx.DrawString("Puma Optimization Algorithm", new XFont("Arial", 16, XFontStyleEx.Bold), XBrushes.Black, new XRect(0, 20, page.Width, page.Height), XStringFormats.TopCenter);
-            gfx.DrawString($"{functionName}", font, XBrushes.Black, new XRect(40, 40, page.Width - 80, page.Height), XStringFormats.TopLeft);
-            gfx.DrawString($"Parametry: PF1 = {pf1}; PF2 = {pf2}; PF3 = {pf3}; l = {l}; u = {u}; a = {a}", font, XBrushes.Black, new XRect(40, 60, page.Width - 80, page.Height), XStringFormats.TopLeft);
-            gfx.DrawString($"Iteracje: {iteration}, populacja: {population}, wymiary: {dimension}", font, XBrushes.Black, new XRect(40, 80, page.Width - 80, page.Height), XStringFormats.TopLeft);
-            gfx.DrawString($"Najlepsza wartość (fBest): {fBest}", font, XBrushes.Black, new XRect(40, 100, page.Width - 80, page.Height), XStringFormats.TopLeft);
-            gfx.DrawString($"Pozycja końcowa (xBest): {string.Join("; ", xBest)}", font, XBrushes.Black, new XRect(40, 120, page.Width - 80, page.Height), XStringFormats.TopLeft);
+                        pdf.GetDocumentInfo().SetTitle("Puma PDF Report");
 
-            document.Save($"{path}\\PO_PDF_Report.pdf");
+                        document.Add(new Paragraph("Puma Optimization Algorithm")
+                            .SetFontSize(16)
+                            .SetTextAlignment(TextAlignment.CENTER));
+
+                        document.Add(new Paragraph(functionName)
+                            .SetFontSize(12)
+                            .SetTextAlignment(TextAlignment.LEFT)
+                            .SetMarginTop(10));
+
+                        document.Add(new Paragraph($"Parametry: PF1 = {pf1}; PF2 = {pf2}; PF3 = {pf3}; l = {l}; u = {u}; a = {a}")
+                            .SetFontSize(12));
+
+                        document.Add(new Paragraph($"Iteracje: {iteration}, populacja: {population}, wymiary: {dimension}")
+                            .SetFontSize(12));
+
+                        document.Add(new Paragraph($"Najlepsza wartość (fBest): {fBest}")
+                            .SetFontSize(12));
+
+                        document.Add(new Paragraph("Pozycja końcowa (xBest):")
+                            .SetFontSize(12));
+
+                        document.Add(new Paragraph(string.Join("; ", xBest))
+                            .SetFontSize(12));
+
+                        document.Close();
+                    }
+                }
+
+                Console.WriteLine($"PDF report generated successfully at: {filePath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error generating PDF: {ex.Message}");
+            }
         }
     }
 
@@ -111,6 +200,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
             {
                 ReportString += $"{x}, ";
             }
+
+            ReportString += "\n\n";
         }
 
         public string ReportString { get => report; set => report = value; }

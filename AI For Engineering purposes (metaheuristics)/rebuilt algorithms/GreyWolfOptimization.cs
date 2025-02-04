@@ -121,8 +121,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
             this.dimension = dimension;
             this.iteration = iteration;
             this.CurrentIteration = CurrentIteration;
-            this.wolves = wolves;
             this.numberOfEvaluations = numberOfEvaluations;
+            this.wolves = wolves;
         }
 
         public void SaveToFileStateOfAlgorithm(string path)
@@ -145,6 +145,48 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                     }
                     line += p.Fitness.ToString();
                     sw.WriteLine(line);
+                }
+            }
+        }
+    }
+
+
+    class WolfStateReader : IStateReader
+    {
+        public Wolf[] Wolves { get; private set; }
+        public int Population { get; private set; }
+        public int Dimension { get; private set; }
+        public int Iterations { get; private set; }
+        public int CurrentIteration { get; private set; }
+        public int NCall { get; private set; }
+        public string FunctionName { get; private set; }
+        public void LoadFromFileStateOfAlgorithm(string path)
+        {
+         if(File.Exists(path+"/GWOState.txt"))
+            {
+                using (StreamReader sr = new StreamReader(path + "/GWOState.txt"))
+                {
+                    FunctionName = sr.ReadLine();
+                    Population = int.Parse(sr.ReadLine());
+                    Dimension = int.Parse(sr.ReadLine());
+                    Iterations = int.Parse(sr.ReadLine());
+                    CurrentIteration = int.Parse(sr.ReadLine());
+                    NCall = int.Parse(sr.ReadLine());
+                    Wolf[] wolves = new Wolf[Population];
+                    for (int i = 0; i < Population; i++)
+                    {
+                        wolves[i] = new Wolf(Dimension);
+                        string line = sr.ReadLine();
+                        string[] args = line.Split(", ");
+
+                        wolves[i].Fitness = Double.Parse(args[args.Length - 1]);
+                        wolves[i].Position = new double[Dimension];
+                        for (int j = 0; j<Dimension; j++)
+                        {
+                            wolves[i].Position[j] = double.Parse(args[j]);
+                        }
+                    }
+                    Wolves = wolves;
                 }
             }
         }
@@ -189,38 +231,51 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void Solve(fitnessFunction f, double[,] domain, string functionName, params double[] parameters)
         {
+            reader = new WolfStateReader();
             dimensions = domain.GetLength(1);
-            population = (int)parameters[0];
+            reader.LoadFromFileStateOfAlgorithm(""); //tutaj by trzeba bylo wprowadzic sciezke do folderu gdzie zapisujemy te stany
 
-            Wolves = new Wolf[population];
-
-            for (int i = 0; i < this.population; i++)
+            if(((WolfStateReader)reader).Wolves != null && ((WolfStateReader)reader).Wolves.Length > 0)
             {
-                Wolves[i] = new Wolf(dimensions);
+                population = ((WolfStateReader)reader).Population;
+                TargetIteration = ((WolfStateReader)reader).Iterations;
+                Wolves = ((WolfStateReader)reader).Wolves;
             }
-
-            for (int i = 0; i < this.population; i++)
+            else 
             {
-                Wolves[i].Position = new double[dimensions];
+                population = (int)parameters[0];
 
-                for (int j = 0; j < dimensions; j++)
+                Wolves = new Wolf[population];
+
+                for (int i = 0; i < this.population; i++)
                 {
-                    if (domain.GetLength(0) < 2 || domain.GetLength(1) < dimensions)
+                    Wolves[i] = new Wolf(dimensions);
+                }
+
+                for (int i = 0; i < this.population; i++)
+                {
+                    Wolves[i].Position = new double[dimensions];
+
+                    for (int j = 0; j < dimensions; j++)
                     {
-                        Console.WriteLine(domain.GetLength(0));
-                        Console.WriteLine(domain.GetLength(1));
-                        throw new ArgumentException("domain array must have at least 2 rows and 'dimensions' columns.");
+                        if (domain.GetLength(0) < 2 || domain.GetLength(1) < dimensions)
+                        {
+                            Console.WriteLine(domain.GetLength(0));
+                            Console.WriteLine(domain.GetLength(1));
+                            throw new ArgumentException("domain array must have at least 2 rows and 'dimensions' columns.");
+                        }
+                        Wolves[i].Position[j] = domain[0, j] + rnd.NextDouble() * (domain[1, j] - domain[0, j]);
                     }
-                    Wolves[i].Position[j] = domain[0, j] + rnd.NextDouble() * (domain[1, j] - domain[0, j]);
+                }
+
+
+                for (int i = 0; i < this.population; i++)
+                {
+                    Wolves[i].Fitness = CalculateFitnessFunction(Wolves[i].Position, f);
                 }
             }
-
-
-            for (int i = 0; i < this.population; i++)
-            {
-                Wolves[i].Fitness = CalculateFitnessFunction(Wolves[i].Position, f);
-            }
-
+            
+            //up until here
             (var alpha, var beta, var delta) = GetAlphaBetaDelta();
 
             for (; CurrentIteration < TargetIteration && Running; CurrentIteration++)

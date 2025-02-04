@@ -307,6 +307,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 Xbest = alpha.Position;
                 Fbest = alpha.Fitness;
                 writer = new WolfStateWriter(population, dimensions, TargetIteration, CurrentIteration, nCall, Wolves, functionName);
+                writer.SaveToFileStateOfAlgorithm(""); //tutaj tez path do tego folderu
             }
 
             NumberOfEvaluationFitnessFunction += population;

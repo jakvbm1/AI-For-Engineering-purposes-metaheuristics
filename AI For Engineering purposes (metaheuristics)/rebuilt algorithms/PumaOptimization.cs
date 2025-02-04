@@ -270,12 +270,12 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public PumaOptimization()
         {
             var population = new ParamInfo("population", "population of pumas", 10000, 3, 10);
-            var PF1 = new ParamInfo("PF1", "iterations of the algorithm", 0.8, 0.2, 0.5);
-            var PF2 = new ParamInfo("PF2", "iterations of the algorithm", 0.8, 0.2, 0.5);
-            var PF3 = new ParamInfo("PF3", "iterations of the algorithm", 0.5, 0.1, 0.3);
-            var L = new ParamInfo("L", "iterations of the algorithm", 0.9, 0.5, 0.7);
-            var U = new ParamInfo("U", "iterations of the algorithm", 0.6, 0.2, 0.4);
-            var alpha = new ParamInfo("Alpha", "iterations of the algorithm", 3, 1, 2);
+            var PF1 = new ParamInfo("PF1", "parameter no. 1", 0.8, 0.2, 0.5);
+            var PF2 = new ParamInfo("PF2", "parameter no. 2", 0.8, 0.2, 0.5);
+            var PF3 = new ParamInfo("PF3", "parameter no. 3", 0.5, 0.1, 0.3);
+            var L = new ParamInfo("L", "L parameter", 0.9, 0.5, 0.7);
+            var U = new ParamInfo("U", "U parameter", 0.6, 0.2, 0.4);
+            var alpha = new ParamInfo("Alpha", "Alpha parameter", 3, 1, 2);
 
 
             ParamInfo = new ParamInfo[] { population, PF1, PF2, PF3, L, U, alpha };
@@ -295,24 +295,24 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void Solve(fitnessFunction f, double[,] domain, string functionName, params double[] parameters)
         {
-            PumaStateReader pumaStateReader = new PumaStateReader();
-
+            reader = new PumaStateReader();
+            reader.LoadFromFileStateOfAlgorithm(""); //sciezka do folderu
             var Pumas = new Puma[(int)parameters[0]];
             xbest = new double[(int)parameters[2]];
             dimensions = domain.GetLength(1);
-            if (pumaStateReader.Pumas != null && pumaStateReader.Pumas.Length > 0)
+            if (((PumaStateReader)reader).Pumas != null && ((PumaStateReader)reader).Pumas.Length > 0)
             {
-                population = pumaStateReader.Population;
-                TargetIteration = pumaStateReader.Iterations;
+                population = ((PumaStateReader)reader).Population;
+                TargetIteration = ((PumaStateReader)reader).Iterations;
                 
-                Pf1 = pumaStateReader.PF1;
-                pf2 = pumaStateReader.PF2;
-                pf3 = pumaStateReader.PF3;
-                l = pumaStateReader.L;
-                u = pumaStateReader.U;
-                a = pumaStateReader.A;
-                CurrentIteration = pumaStateReader.CurrentIteration;
-                Pumas = pumaStateReader.Pumas;
+                Pf1 = ((PumaStateReader)reader).PF1;
+                pf2 = ((PumaStateReader)reader).PF2;
+                pf3 = ((PumaStateReader)reader).PF3;
+                l = ((PumaStateReader)reader).L;
+                u = ((PumaStateReader)reader).U;
+                a = ((PumaStateReader)reader).A;
+                CurrentIteration = ((PumaStateReader)reader).CurrentIteration;
+                Pumas = ((PumaStateReader)reader).Pumas;
             }
             else
             {
@@ -392,6 +392,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 fbest = Pumas[0].Fitness;
 
                 writer = new PumaStateWriter(CurrentIteration, population, dimensions, TargetIteration, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
+                writer.SaveToFileStateOfAlgorithm(""); //sciezka do foleru
             }
 
             Seq_Cost_Explore[0] = Math.Abs(InitialFBest - Costs_Explor[0]); // Eq(5)
@@ -525,6 +526,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 }
 
                 writer = new PumaStateWriter(CurrentIteration, population, dimensions, TargetIteration, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
+                writer.SaveToFileStateOfAlgorithm(""); //sciezka do foleru
             }
             stringReportGenerator = new PumaTextReport(functionName, fbest, xbest, parameters);
             pdfReportGenerator = new PumaPDFReport(functionName, fbest, xbest, parameters);

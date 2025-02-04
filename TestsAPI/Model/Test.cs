@@ -50,10 +50,10 @@ namespace TestsAPI.Model
 
     public enum TestStatus
     {
-        Created,
-        Running,
-        Pausing,
-        Paused,
-        Finished
+        Created = 1,
+        Running = 2,
+        Pausing = 3,
+        Paused = 4,
+        Finished = 5
     }
 }

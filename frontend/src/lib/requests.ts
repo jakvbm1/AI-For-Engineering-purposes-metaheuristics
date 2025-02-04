@@ -1,4 +1,6 @@
 import { OptimizationAlgorithm } from "./OptimizationAlgorithm";
+import { TestFunction } from "./TestFunction";
+import { NewTestData, Test, TestStatus } from "./TestInterface";
 
 export async function getOptimizationAlgorithms(): Promise<OptimizationAlgorithm[]> {
   return [
@@ -28,9 +30,26 @@ export async function getOptimizationAlgorithms(): Promise<OptimizationAlgorithm
   ]
 }
 
-export async function getFitnessFunctions(): Promise<string[]> {
+export async function getTestFunctions(): Promise<TestFunction[]> {
   return [
-    "RosenBrociek",
-    "Rasputin"
+    {
+      Name: "RosenBrociek",
+      DefaultDimensions: 2,
+      IsMultiDimensional: true
+    },
+    {
+      Name: "Rasputin",
+      DefaultDimensions: 2,
+      IsMultiDimensional: false
+    }
   ]
+}
+
+export async function createNewTest(newTest: NewTestData): Promise<Test> {
+  return {
+    ...newTest,
+    Id: Math.random().toString(),
+    Status: TestStatus.Created,
+    CurrentIteration: 0
+  }
 }

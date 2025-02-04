@@ -1,16 +1,25 @@
 import './App.css'
 import { useEffect, useState } from 'react'
-import { AlgorithmsTuner } from './components/AlgorithmsTuner'
-import { getFitnessFunctions, getOptimizationAlgorithms } from './lib/requests';
+import { TestsAdder } from './components/TestsAdder'
+import { createNewTest, getTestFunctions, getOptimizationAlgorithms } from './lib/requests';
 import { OptimizationAlgorithm } from './lib/OptimizationAlgorithm';
 import { Loader2 } from 'lucide-react';
-import { Label } from './components/ui/label';
 import { Button } from './components/ui/button';
-import { MultiSelect } from './components/MultiSelect';
+import { NewTestData, statusToString, Test, TestStatus } from './lib/TestInterface';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./components/ui/card"
+import { Progress } from './components/ui/progress';
+import { TestFunction } from './lib/TestFunction';
 
 interface AppData {
   optimizationAlgorithms: OptimizationAlgorithm[];
-  fitnessFunctions: string[];
+  fitnessFunctions: TestFunction[];
 }
 
 export function App() {
@@ -18,7 +27,7 @@ export function App() {
 
   useEffect(() => {
     const getData = async () => {
-      const [optimizationAlgorithms, fitnessFunctions] = await Promise.all([getOptimizationAlgorithms(), getFitnessFunctions()]);
+      const [optimizationAlgorithms, fitnessFunctions] = await Promise.all([getOptimizationAlgorithms(), getTestFunctions()]);
       setData({optimizationAlgorithms, fitnessFunctions});
     }
     getData()
@@ -29,8 +38,8 @@ export function App() {
     <Loader2 className="size-8 animate-spin text-blue-500" />
   
   return (
-    <main className='w-[100vw] h-[100vh] flex flex-col justify-center items-center'>
-      <h1 className="text-4xl font-extrabold tracking-tight mb-8">
+    <main className='w-full h-[100vh] flex flex-col items-center'>
+      <h1 className="text-4xl font-extrabold tracking-tight my-8">
         Metaheuristics tester
       </h1>
       {content}
@@ -39,59 +48,53 @@ export function App() {
 }
 
 function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
-  const [algorithmsParameters, setAlgorithmsParameters] = useState(getAlgorithmsParameters(optimizationAlgorithms));
-  const [selectedFitnessFunctions, setSelectedFitnessFunction] = useState<string[]>([]);
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState<string[]>([]);
-  const [population, setPopulation] = useState(30);
-  const [iterations, setIterations] = useState(50);
-  const [dimensions, setDimensions] = useState(5);
+  const [tests, setTests] = useState<Test[]>([]);
+
+  const addTests = async (newTests: NewTestData[]) => {
+    const promises = newTests.map((t) => createNewTest(t));
+    const t = await Promise.all(promises);
+    setTests([...tests, ...t]);
+  };
+
+  const testCards = tests.map(({ Id, AlgorithmName, FunctionName, Parameters, Dimensions, Status, CurrentIteration, Iterations }) => {
+    const algo = optimizationAlgorithms.find((a) => a.name === AlgorithmName)!;
+    const parameters = algo.paramsInfo.map((param, index) => `${param.name}: ${Parameters[index]}`).join(', ')
+
+    return (
+      <Card className="w-full" key={Id}>
+        <CardHeader>
+          <CardTitle>{AlgorithmName} & {FunctionName} - {statusToString[Status]}</CardTitle>
+          <CardDescription>Dimensions: {Dimensions}, Iterations: {Iterations} {parameters}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className='relative w-full mb-[-19px] text-center z-10 text-blue-400 font-semibold'>
+            {CurrentIteration}/{Iterations}
+          </div>
+          <Progress value={(CurrentIteration * 100) / Iterations} />
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <Button variant="destructive">Delete</Button>
+          <Button variant="outline">Download state</Button>
+          <Button variant="outline">Download report</Button>
+          { Status === TestStatus.Created || Status === TestStatus.Paused ?
+            <Button>Run</Button> : Status === TestStatus.Running ?
+            <Button>Pause</Button> : null }
+        </CardFooter>
+      </Card>
+    )
+  })
 
   return (
-    <div className='w-[40vw] flex flex-col gap-4'>
-      <Label>
-        <p className='mb-1'>Fitness functions</p>
-        <MultiSelect
-          placeholder='Select a fitness function...'
-          options={fitnessFunctions}
-          checkedOptions={selectedFitnessFunctions}
-          onCheck={setSelectedFitnessFunction}
-        />
-      </Label>
-
-      <Label>
-        <p className='mb-1'>Optimization algorithm</p>
-        <MultiSelect
-          placeholder='Select an optimization algorithm...'
-          options={optimizationAlgorithms.map((o) => o.name)}
-          checkedOptions={selectedAlgorithm}
-          onCheck={setSelectedAlgorithm}
-        />
-      </Label>
-
-      <AlgorithmsTuner
+    <div className='w-[40vw] flex flex-col gap-4 flex-1'>
+      <TestsAdder
         algorithms={optimizationAlgorithms}
-        algorithmsParameters={algorithmsParameters}
-        setAlgorithmsParameters={setAlgorithmsParameters}
-        population={population}
-        setPopulation={setPopulation}
-        iterations={iterations}
-        setIterations={setIterations}
-        dimensions={dimensions}
-        setDimensions={setDimensions}
+        functions={fitnessFunctions}
+        addTests={addTests}
       />
 
-      <Button variant='outline'>Pick state file</Button>
+      <Button>Start all tests</Button>
 
-      <Button>Start</Button>
+      { testCards }
     </div>
   )
-}
-
-function getAlgorithmsParameters(a: OptimizationAlgorithm[]): Record<string, Record<string, number>> {
-  return a.reduce((acc, algo) => {
-    const params = algo.paramsInfo.reduce((acc, param) => {
-      return { ...acc, [param.name]: param.defaultValue };
-    }, {});
-    return {...acc, [algo.name]: params};
-  }, {})
 }

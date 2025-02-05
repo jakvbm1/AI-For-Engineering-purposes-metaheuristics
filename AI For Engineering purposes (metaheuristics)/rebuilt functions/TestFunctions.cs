@@ -21,7 +21,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
                 new Eggholder(),
                 new Beale(),
                 new BukinN6(),
-                new Himmelblaus()
+                new Himmelblaus(),
+                new ExampleA(),
+                new exampleB()
             ];
         }
     }

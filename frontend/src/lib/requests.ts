@@ -14,11 +14,11 @@ export async function getTestFunctions(): Promise<TestFunction[]> {
   return await resp.json();
 }
 
-export async function createNewTest(newTest: NewTestData): Promise<Test> {
+export async function createNewTest(newTest: NewTestData, state: string): Promise<Test> {
   const options = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newTest)
+    body: JSON.stringify({ ...newTest, state })
   }
   const resp = await fetch(`${serverAddress}/api/Tests/create`, options)
   const { id } = await resp.json();

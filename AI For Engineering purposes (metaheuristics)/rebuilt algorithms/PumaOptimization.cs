@@ -289,9 +289,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void LoadFromFileStateOfAlgorithm(string path)
         {
-            if (File.Exists(path + "/POState.txt"))
+            if (File.Exists(path))
             {
-                using (StreamReader sr = new StreamReader(path + "/POState.txt"))
+                using (StreamReader sr = new StreamReader(path))
                 {
                     FunctionName = sr.ReadLine();
                     Population = int.Parse(sr.ReadLine());
@@ -374,7 +374,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public string Name { get => name; set => name = value; }
         public ParamInfo[] ParamInfo { get => paramInfo; set => paramInfo = value; }
         public IStateWriter writer { get; set; }
-        public IStateReader reader { get; set; }
+        public IStateReader reader { get; set; } = new PumaStateReader();
         public IGeneratePDFReport pdfReportGenerator { get => pdfReport; set => pdfReport = value; }
         public IGenerateTextReport stringReportGenerator { get => textReport; set => textReport = value; }
         public double[] Xbest { get => xbest; set => xbest = value; }
@@ -384,7 +384,6 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void Solve(fitnessFunction f, double[,] domain, string functionName, params double[] parameters)
         {
-            reader = new PumaStateReader();
             reader.LoadFromFileStateOfAlgorithm(""); //sciezka do folderu
             var Pumas = new Puma[(int)parameters[0]];
             

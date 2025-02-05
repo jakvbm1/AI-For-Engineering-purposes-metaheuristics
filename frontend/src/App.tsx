@@ -50,8 +50,8 @@ export function App() {
 function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
   const [tests, setTests] = useState<Test[]>([]);
 
-  const addTests = async (newTests: NewTestData[]) => {
-    const promises = newTests.map((t) => createNewTest(t));
+  const addTests = async (newTests: NewTestData[], state: string) => {
+    const promises = newTests.map((t) => createNewTest(t, state));
     const t = await Promise.all(promises);
     setTests([...tests, ...t]);
   };
@@ -77,7 +77,7 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
       <Card className="w-full" key={id}>
         <CardHeader>
           <CardTitle>{algorithmName} & {functionName} - {statusToString[status]}</CardTitle>
-          <CardDescription>Dimensions: {dimensions}, Iterations: {iterations} {parametersString}</CardDescription>
+          <CardDescription>Dimensions: {dimensions}, Iterations: {iterations}, {parametersString}</CardDescription>
         </CardHeader>
         <CardContent>
           { fbest !== undefined && <div>Fbest: {fbest}</div> }

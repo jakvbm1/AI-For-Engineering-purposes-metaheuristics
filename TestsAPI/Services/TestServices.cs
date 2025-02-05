@@ -11,7 +11,7 @@ namespace TestsAPI.Services
     {
         private readonly List<Test> _tests = [];
 
-        public Test CreateTest(string algorithmName, string functionName, double[] parameters, int dimensions, int iterations)
+        public Test CreateTest(string algorithmName, string functionName, double[] parameters, int dimensions, int iterations, string state)
         {
             var algorithm = OptimizationAlgorithms.Algorithms.FirstOrDefault(a => a.Name == algorithmName);
             var function = TestFunctions.Functions.FirstOrDefault(f => f.Name == functionName);
@@ -22,6 +22,16 @@ namespace TestsAPI.Services
             function.Dimensions = dimensions;
             var test = new Test{ Algorithm = algorithm, Function = function, Parameters = parameters };
             _tests.Add(test);
+
+
+            if (!string.IsNullOrEmpty(state))
+            {
+                var f = File.CreateText(Directory.GetCurrentDirectory() + "/state/" + test.Id.ToString() + ".txt");
+                f.Write(state);
+                f.Close();
+                algorithm.reader.LoadFromFileStateOfAlgorithm(state);
+            }
+
             return test;
         }
         public Test StartTest(Guid id) { 

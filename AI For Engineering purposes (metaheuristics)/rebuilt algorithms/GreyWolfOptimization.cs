@@ -249,7 +249,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public string FunctionName { get; private set; }
         public void LoadFromFileStateOfAlgorithm(string path)
         {
-         if(File.Exists(path+"/GWOState.txt"))
+         if(File.Exists(path))
             {
                 using (StreamReader sr = new StreamReader(path + "/GWOState.txt"))
                 {
@@ -302,7 +302,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public string Name { get => name; set => name = value; }
         public ParamInfo[] ParamInfo { get => paramInfo; set => paramInfo = value; }
         public IStateWriter writer { get; set; }
-        public IStateReader reader { get; set; }
+        public IStateReader reader { get; set; } = new WolfStateReader();
         public IGeneratePDFReport pdfReportGenerator { get => pdfReport; set => pdfReport = value; }
         public IGenerateTextReport stringReportGenerator { get => textReport; set =>textReport = value; }
         public double[] Xbest { get => xbest; set => xbest = value; }
@@ -318,7 +318,6 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void Solve(fitnessFunction f, double[,] domain, string functionName, params double[] parameters)
         {
-            reader = new WolfStateReader();
             dimensions = domain.GetLength(1);
             reader.LoadFromFileStateOfAlgorithm(""); //tutaj by trzeba bylo wprowadzic sciezke do folderu gdzie zapisujemy te stany
 

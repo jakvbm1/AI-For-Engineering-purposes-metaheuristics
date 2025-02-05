@@ -42,7 +42,7 @@ namespace TestsAPI.Controllers
         [HttpPost("create")]
         public IActionResult CreateTest([FromBody] CreateTestBody body)
         {
-            var newTest = _testService.CreateTest(body.AlgorithmName, body.FunctionName, body.Parameters, body.Dimensions, body.Iterations);
+            var newTest = _testService.CreateTest(body.AlgorithmName, body.FunctionName, body.Parameters, body.Dimensions, body.Iterations, body.State);
             return Ok(new { newTest.Id });
         }
 
@@ -121,5 +121,6 @@ namespace TestsAPI.Controllers
         public double[] Parameters { get; set; }
         public int Dimensions { get; set; }
         public int Iterations { get; set; }
+        public string State { get; set; }
     }
 }

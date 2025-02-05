@@ -6,7 +6,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { ScrollArea } from "./ui/scroll-area";
 import { Plus, X } from "lucide-react";
-import { useState } from "react";
+import { ChangeEventHandler, useRef, useState } from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select";
 import { TestFunction } from "@/lib/TestFunction";
 import { NewTestData } from "@/lib/TestInterface";
@@ -14,7 +14,7 @@ import { NewTestData } from "@/lib/TestInterface";
 interface Props {
   algorithms: OptimizationAlgorithm[];
   functions: TestFunction[];
-  addTests: (newTests: NewTestData[]) => void;
+  addTests: (newTests: NewTestData[], state: string) => void;
 }
 
 const iterationsParamInfo: ParamInfo = {
@@ -31,6 +31,8 @@ export function TestsAdder({ algorithms, functions, addTests }: Props) {
   const [dimensions, setDimensions] = useState<number[]>([]);
   const [iterations, setIterations] = useState<number[]>([]);
   const [params, setParams] = useState<number[][]>([]);
+  const [state, setState] = useState("");
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const algoAndFuncPicked = !!algorithm && !!testFunction;
   const canAdd = algoAndFuncPicked && iterations.length > 0 && dimensions.length > 0 && params.every((p) => p.length > 0);
@@ -75,8 +77,14 @@ export function TestsAdder({ algorithms, functions, addTests }: Props) {
         iterations: iterations,
       }
     });
-    addTests(newTests);
+    addTests(newTests, state);
   }
+
+  const handleAddFile: ChangeEventHandler<HTMLInputElement> = async (e) => {
+    if (!e.target.files?.length) return;
+    const stateText = await e.target.files[0].text();
+    setState(stateText);
+  };
   
   return (
     <Drawer>
@@ -124,6 +132,10 @@ export function TestsAdder({ algorithms, functions, addTests }: Props) {
                   </SelectContent>
                 </Select>
               </Label>
+              <input type="file" accept="text/plain" className="hidden" ref={inputRef} onChange={handleAddFile} />
+              <Button onClick={() => inputRef.current?.click()}>
+                Pick a state file (optional)
+              </Button>
 
               { !algoAndFuncPicked ? "Pick an algorithm and a test function" :
                 <Accordion type="single" collapsible>

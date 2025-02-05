@@ -387,8 +387,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
             reader = new PumaStateReader();
             reader.LoadFromFileStateOfAlgorithm(""); //sciezka do folderu
             var Pumas = new Puma[(int)parameters[0]];
-            xbest = new double[(int)parameters[2]];
+            
             dimensions = domain.GetLength(1);
+            xbest = new double[dimensions];
             if (((PumaStateReader)reader).Pumas != null && ((PumaStateReader)reader).Pumas.Length > 0)
             {
                 population = ((PumaStateReader)reader).Population;
@@ -412,6 +413,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 l = parameters[4];
                 u = parameters[5];
                 a = (int)parameters[6];
+
+                Pumas = new Puma[population];
 
                 for (int i = 0; i < population; i++)
                 {
@@ -731,6 +734,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 double rand9 = rnd.NextDouble() * 2 - 1;
                 double[] S2 = new double[dimensions];
                 double[] Xattack = new double[dimensions];
+
                 for (int j = 0; j < dimensions; j++)
                 {
                     F1[j] *= Math.Exp(2 - (CurrentIteration + 1) * (2 / TargetIteration)); // eq 35

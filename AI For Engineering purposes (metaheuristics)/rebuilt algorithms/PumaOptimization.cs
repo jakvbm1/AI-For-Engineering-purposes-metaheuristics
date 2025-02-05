@@ -89,22 +89,20 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         double pf1, pf2, pf3, l, u;
         int a, iteration, population, dimension;
 
-        public PumaPDFReport(string functionName, double fBest, double[] xBest, double[] parameters)
+        public PumaPDFReport(string functionName, double fBest, double[] xBest, int iteration, int dimension, double[] parameters)
         {
+            this.iteration = iteration;
+            this.dimension = dimension;
             this.functionName = functionName;
             this.fBest = fBest;
             this.xBest = xBest;
             this.population = (int)parameters[0];
-            this.iteration = (int)parameters[1];
-            this.dimension = (int)parameters[2];
-            this.pf1 = parameters[3];
-            this.pf2 = parameters[4];
-            this.pf3 = parameters[5];
-            this.l = parameters[6];
-            this.u = parameters[7];
-            this.a = (int)parameters[8];
-
-
+            this.pf1 = parameters[1];
+            this.pf2 = parameters[2];
+            this.pf3 = parameters[3];
+            this.l = parameters[4];
+            this.u = parameters[5];
+            this.a = (int)parameters[6];
         }
 
         public void GenerateReport(string path)
@@ -166,23 +164,21 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         private string report;
 
-        public PumaTextReport(string functionName, double fBest, double[] xBest, double[] parameters)
+        public PumaTextReport(string functionName, double fBest, double[] xBest, int iteration, int dimension, double[] parameters)
         {
+            this.iteration = iteration;
+            this.dimension = dimension;
             this.functionName = functionName;
             this.fBest = fBest;
             this.xBest = xBest;
             this.population = (int)parameters[0];
-            this.iteration = (int)parameters[1];
-            this.dimension = (int)parameters[2];
-            this.pf1 = parameters[3];
-            this.pf2 = parameters[4];
-            this.pf3 = parameters[5];
-            this.l = parameters[6];
-            this.u = parameters[7];
-            this.a = (int)parameters[8];
+            this.pf1 = parameters[1];
+            this.pf2 = parameters[2];
+            this.pf3 = parameters[3];
+            this.l = parameters[4];
+            this.u = parameters[5];
+            this.a = (int)parameters[6];
             setReport();
-
-
         }
 
         private void setReport()
@@ -617,8 +613,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
                 writer = new PumaStateWriter(CurrentIteration, population, dimensions, TargetIteration, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
             }
-            stringReportGenerator = new PumaTextReport(functionName, fbest, xbest, parameters);
-            pdfReportGenerator = new PumaPDFReport(functionName, fbest, xbest, parameters);
+            stringReportGenerator = new PumaTextReport(functionName, fbest, xbest, TargetIteration, dimensions, parameters);
+            pdfReportGenerator = new PumaPDFReport(functionName, fbest, xbest, TargetIteration, dimensions, parameters);
             Console.WriteLine(stringReportGenerator.ReportString);
         }
 

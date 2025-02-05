@@ -1,6 +1,6 @@
 export interface OptimizationAlgorithm {
   name: string;
-  paramsInfo: ParamInfo[];
+  paramInfo: ParamInfo[];
 }
 
 export interface ParamInfo {

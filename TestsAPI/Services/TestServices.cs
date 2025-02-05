@@ -11,7 +11,7 @@ namespace TestsAPI.Services
     {
         private readonly List<Test> _tests = [];
 
-        public Test CreateTest(string algorithmName, string functionName, double[] parameters, int dimensions, int iterations)
+        public Test CreateTest(string algorithmName, string functionName, double[] parameters, int dimensions, int iterations, string state)
         {
             var algorithm = OptimizationAlgorithms.Algorithms.FirstOrDefault(a => a.Name == algorithmName);
             var function = TestFunctions.Functions.FirstOrDefault(f => f.Name == functionName);
@@ -22,13 +22,23 @@ namespace TestsAPI.Services
             function.Dimensions = dimensions;
             var test = new Test{ Algorithm = algorithm, Function = function, Parameters = parameters };
             _tests.Add(test);
+
+
+            if (!string.IsNullOrEmpty(state))
+            {
+                var f = File.CreateText(Directory.GetCurrentDirectory() + "/state/" + test.Id.ToString() + ".txt");
+                f.Write(state);
+                f.Close();
+                algorithm.reader.LoadFromFileStateOfAlgorithm(state);
+            }
+
             return test;
         }
         public Test StartTest(Guid id) { 
             var test = _tests.FirstOrDefault(x => x.Id == id);
 
             if (test == null) throw new Exception("Test not found");
-            if (test.Status == TestStatus.Running || test.Status == TestStatus.Pausing) throw new Exception("Test is already running");
+            if (test.Status == TestStatus.Running || test.Status == TestStatus.Pausing) return test;
 
             test.Start();
 
@@ -58,6 +68,27 @@ namespace TestsAPI.Services
             if (test == null) throw new Exception("Test not found");
 
             return test.Algorithm.stringReportGenerator.ReportString;
+        }
+
+        public byte[] GetPdfReport(Guid id)
+        {
+            var test = _tests.FirstOrDefault(t => t.Id == id);
+
+            if (test == null) throw new Exception("Test not found");
+
+            var path = Directory.GetCurrentDirectory() + "/reports/" + id.ToString() + ".pdf";
+            test.Algorithm.pdfReportGenerator.GenerateReport(path);
+            return File.ReadAllBytes(path);
+        }
+        public byte[] GetState(Guid id)
+        {
+            var test = _tests.FirstOrDefault(t => t.Id == id);
+
+            if (test == null) throw new Exception("Test not found");
+
+            var path = Directory.GetCurrentDirectory() + "/state/" + id.ToString() + ".txt";
+            test.Algorithm.writer.SaveToFileStateOfAlgorithm(path);
+            return File.ReadAllBytes(path);
         }
         private void RemoveOldTests(object state)
         {

@@ -104,11 +104,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void GenerateReport(string path)
         {
-            string filePath = Path.Combine(path, "GWO_PDF_Report.pdf");
-
             try
             {
-                using (PdfWriter writer = new PdfWriter(filePath))
+                using (PdfWriter writer = new PdfWriter(path))
                 {
                     using (PdfDocument pdf = new PdfDocument(writer))
                     {
@@ -141,7 +139,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                     }
                 }
 
-                Console.WriteLine($"PDF report generated successfully at: {filePath}");
+                Console.WriteLine($"PDF report generated successfully at: {path}");
             }
             catch (Exception ex)
             {
@@ -216,7 +214,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void SaveToFileStateOfAlgorithm(string path)
         {
-            using (StreamWriter sw = new StreamWriter($"{path}\\GWOState.txt"))
+            using (StreamWriter sw = new StreamWriter(path))
             {
                 sw.WriteLine(functionName);
                 sw.WriteLine(population);
@@ -251,7 +249,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public string FunctionName { get; private set; }
         public void LoadFromFileStateOfAlgorithm(string path)
         {
-         if(File.Exists(path+"/GWOState.txt"))
+         if(File.Exists(path))
             {
                 using (StreamReader sr = new StreamReader(path + "/GWOState.txt"))
                 {
@@ -304,7 +302,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public string Name { get => name; set => name = value; }
         public ParamInfo[] ParamInfo { get => paramInfo; set => paramInfo = value; }
         public IStateWriter writer { get; set; }
-        public IStateReader reader { get; set; }
+        public IStateReader reader { get; set; } = new WolfStateReader();
         public IGeneratePDFReport pdfReportGenerator { get => pdfReport; set => pdfReport = value; }
         public IGenerateTextReport stringReportGenerator { get => textReport; set =>textReport = value; }
         public double[] Xbest { get => xbest; set => xbest = value; }
@@ -320,7 +318,6 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void Solve(fitnessFunction f, double[,] domain, string functionName, params double[] parameters)
         {
-            reader = new WolfStateReader();
             dimensions = domain.GetLength(1);
             reader.LoadFromFileStateOfAlgorithm(""); //tutaj by trzeba bylo wprowadzic sciezke do folderu gdzie zapisujemy te stany
 
@@ -396,7 +393,6 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 Xbest = alpha.Position;
                 Fbest = alpha.Fitness;
                 writer = new WolfStateWriter(population, dimensions, TargetIteration, CurrentIteration, nCall, Wolves, functionName);
-                writer.SaveToFileStateOfAlgorithm(""); //tutaj tez path do tego folderu
             }
 
             NumberOfEvaluationFitnessFunction += population;

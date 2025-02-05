@@ -42,7 +42,7 @@ namespace TestsAPI.Controllers
         [HttpPost("create")]
         public IActionResult CreateTest([FromBody] CreateTestBody body)
         {
-            var newTest = _testService.CreateTest(body.AlgorithmName, body.FunctionName, body.Parameters, body.Dimensions, body.Iterations);
+            var newTest = _testService.CreateTest(body.AlgorithmName, body.FunctionName, body.Parameters, body.Dimensions, body.Iterations, body.State);
             return Ok(new { newTest.Id });
         }
 
@@ -70,7 +70,7 @@ namespace TestsAPI.Controllers
             var test = _testService.GetStatus(id);
             if (test == null) return NotFound("Test nie istnieje.");
 
-            return Ok(new { test.Id, test.Status, test.Algorithm.CurrentIteration });
+            return Ok(new { test.Id, test.Status, test.Algorithm.CurrentIteration, test.Algorithm.Xbest, test.Algorithm.Fbest });
         }
 
         [HttpGet("report/{id}")]
@@ -80,6 +80,24 @@ namespace TestsAPI.Controllers
             if (report == null) return NotFound("Test nie istnieje.");
 
             return Ok(report);
+        }
+
+        [HttpGet("pdf-report/{id}")]
+        public IActionResult GetPdfReport(Guid id)
+        {
+            var report = _testService.GetPdfReport(id);
+            if (report == null) return NotFound("Test nie istnieje.");
+
+            return File(report, "application/pdf", "report.pdf");
+        }
+
+        [HttpGet("state/{id}")]
+        public IActionResult GetState(Guid id)
+        {
+            var state = _testService.GetState(id);
+            if (state == null) return NotFound("Test nie istnieje.");
+
+            return File(state, "text/plain", "state.txt");
         }
     }
 
@@ -103,5 +121,6 @@ namespace TestsAPI.Controllers
         public double[] Parameters { get; set; }
         public int Dimensions { get; set; }
         public int Iterations { get; set; }
+        public string State { get; set; }
     }
 }

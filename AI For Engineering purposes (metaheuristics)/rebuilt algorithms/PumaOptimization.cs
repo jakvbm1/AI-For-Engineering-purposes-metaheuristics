@@ -89,31 +89,27 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         double pf1, pf2, pf3, l, u;
         int a, iteration, population, dimension;
 
-        public PumaPDFReport(string functionName, double fBest, double[] xBest, double[] parameters)
+        public PumaPDFReport(string functionName, double fBest, double[] xBest, int iteration, int dimension, double[] parameters)
         {
+            this.iteration = iteration;
+            this.dimension = dimension;
             this.functionName = functionName;
             this.fBest = fBest;
             this.xBest = xBest;
             this.population = (int)parameters[0];
-            this.iteration = (int)parameters[1];
-            this.dimension = (int)parameters[2];
-            this.pf1 = parameters[3];
-            this.pf2 = parameters[4];
-            this.pf3 = parameters[5];
-            this.l = parameters[6];
-            this.u = parameters[7];
-            this.a = (int)parameters[8];
-
-
+            this.pf1 = parameters[1];
+            this.pf2 = parameters[2];
+            this.pf3 = parameters[3];
+            this.l = parameters[4];
+            this.u = parameters[5];
+            this.a = (int)parameters[6];
         }
 
         public void GenerateReport(string path)
         {
-            string filePath = Path.Combine(path, "PO_PDF_Report.pdf");
-
             try
             {
-                using (PdfWriter writer = new PdfWriter(filePath))
+                using (PdfWriter writer = new PdfWriter(path))
                 {
                     using (PdfDocument pdf = new PdfDocument(writer))
                     {
@@ -149,7 +145,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                     }
                 }
 
-                Console.WriteLine($"PDF report generated successfully at: {filePath}");
+                Console.WriteLine($"PDF report generated successfully at: {path}");
             }
             catch (Exception ex)
             {
@@ -168,23 +164,21 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         private string report;
 
-        public PumaTextReport(string functionName, double fBest, double[] xBest, double[] parameters)
+        public PumaTextReport(string functionName, double fBest, double[] xBest, int iteration, int dimension, double[] parameters)
         {
+            this.iteration = iteration;
+            this.dimension = dimension;
             this.functionName = functionName;
             this.fBest = fBest;
             this.xBest = xBest;
             this.population = (int)parameters[0];
-            this.iteration = (int)parameters[1];
-            this.dimension = (int)parameters[2];
-            this.pf1 = parameters[3];
-            this.pf2 = parameters[4];
-            this.pf3 = parameters[5];
-            this.l = parameters[6];
-            this.u = parameters[7];
-            this.a = (int)parameters[8];
+            this.pf1 = parameters[1];
+            this.pf2 = parameters[2];
+            this.pf3 = parameters[3];
+            this.l = parameters[4];
+            this.u = parameters[5];
+            this.a = (int)parameters[6];
             setReport();
-
-
         }
 
         private void setReport()
@@ -241,7 +235,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void SaveToFileStateOfAlgorithm(string path)
         {
-            using (StreamWriter sw = new StreamWriter($"{path}\\POState.txt"))
+            using (StreamWriter sw = new StreamWriter(path))
             {
                 sw.WriteLine(functionName);
                 sw.WriteLine(populationSize);
@@ -291,9 +285,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void LoadFromFileStateOfAlgorithm(string path)
         {
-            if (File.Exists(path + "/POState.txt"))
+            if (File.Exists(path))
             {
-                using (StreamReader sr = new StreamReader(path + "/POState.txt"))
+                using (StreamReader sr = new StreamReader(path))
                 {
                     FunctionName = sr.ReadLine();
                     Population = int.Parse(sr.ReadLine());
@@ -376,7 +370,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
         public string Name { get => name; set => name = value; }
         public ParamInfo[] ParamInfo { get => paramInfo; set => paramInfo = value; }
         public IStateWriter writer { get; set; }
-        public IStateReader reader { get; set; }
+        public IStateReader reader { get; set; } = new PumaStateReader();
         public IGeneratePDFReport pdfReportGenerator { get => pdfReport; set => pdfReport = value; }
         public IGenerateTextReport stringReportGenerator { get => textReport; set => textReport = value; }
         public double[] Xbest { get => xbest; set => xbest = value; }
@@ -386,11 +380,11 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void Solve(fitnessFunction f, double[,] domain, string functionName, params double[] parameters)
         {
-            reader = new PumaStateReader();
             reader.LoadFromFileStateOfAlgorithm(""); //sciezka do folderu
             var Pumas = new Puma[(int)parameters[0]];
-            xbest = new double[(int)parameters[2]];
+            
             dimensions = domain.GetLength(1);
+            xbest = new double[dimensions];
             if (((PumaStateReader)reader).Pumas != null && ((PumaStateReader)reader).Pumas.Length > 0)
             {
                 population = ((PumaStateReader)reader).Population;
@@ -414,6 +408,8 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 l = parameters[4];
                 u = parameters[5];
                 a = (int)parameters[6];
+
+                Pumas = new Puma[population];
 
                 for (int i = 0; i < population; i++)
                 {
@@ -483,7 +479,6 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 fbest = Pumas[0].Fitness;
 
                 writer = new PumaStateWriter(CurrentIteration, population, dimensions, TargetIteration, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
-                writer.SaveToFileStateOfAlgorithm(""); //sciezka do foleru
             }
 
             Seq_Cost_Explore[0] = Math.Abs(InitialFBest - Costs_Explor[0]); // Eq(5)
@@ -617,10 +612,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 }
 
                 writer = new PumaStateWriter(CurrentIteration, population, dimensions, TargetIteration, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
-                writer.SaveToFileStateOfAlgorithm(""); //sciezka do foleru
             }
-            stringReportGenerator = new PumaTextReport(functionName, fbest, xbest, parameters);
-            pdfReportGenerator = new PumaPDFReport(functionName, fbest, xbest, parameters);
+            stringReportGenerator = new PumaTextReport(functionName, fbest, xbest, TargetIteration, dimensions, parameters);
+            pdfReportGenerator = new PumaPDFReport(functionName, fbest, xbest, TargetIteration, dimensions, parameters);
             Console.WriteLine(stringReportGenerator.ReportString);
         }
 
@@ -735,6 +729,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 double rand9 = rnd.NextDouble() * 2 - 1;
                 double[] S2 = new double[dimensions];
                 double[] Xattack = new double[dimensions];
+
                 for (int j = 0; j < dimensions; j++)
                 {
                     F1[j] *= Math.Exp(2 - (CurrentIteration + 1) * (2 / TargetIteration)); // eq 35

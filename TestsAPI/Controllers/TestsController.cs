@@ -81,6 +81,15 @@ namespace TestsAPI.Controllers
 
             return Ok(report);
         }
+
+        [HttpGet("pdf-report/{id}")]
+        public IActionResult GetPdfReport(Guid id)
+        {
+            var report = _testService.GetPdfReport(id);
+            if (report == null) return NotFound("Test nie istnieje.");
+
+            return File(report, "application/pdf", "report.pdf");
+        }
     }
 
     public class ResponseFunction

@@ -59,6 +59,17 @@ namespace TestsAPI.Services
 
             return test.Algorithm.stringReportGenerator.ReportString;
         }
+
+        public byte[] GetPdfReport(Guid id)
+        {
+            var test = _tests.FirstOrDefault(t => t.Id == id);
+
+            if (test == null) throw new Exception("Test not found");
+
+            var path = Directory.GetCurrentDirectory() + "/reports/" + id.ToString() + ".pdf";
+            test.Algorithm.pdfReportGenerator.GenerateReport(path);
+            return File.ReadAllBytes(path);
+        }
         private void RemoveOldTests(object state)
         {
             var now = DateTime.UtcNow;

@@ -2,7 +2,7 @@ import { OptimizationAlgorithm } from "./OptimizationAlgorithm";
 import { TestFunction } from "./TestFunction";
 import { NewTestData, Test, TestStatus } from "./TestInterface";
 
-const serverAddress = "http://127.0.0.1:5032"
+export const serverAddress = "http://127.0.0.1:5032"
 
 export async function getOptimizationAlgorithms(): Promise<OptimizationAlgorithm[]> {
   const resp = await fetch(`${serverAddress}/api/Tests/algorithms`, { headers: { "Content-Type": "application/json" } })

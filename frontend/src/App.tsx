@@ -1,7 +1,7 @@
 import './App.css'
 import { useEffect, useState } from 'react'
 import { TestsAdder } from './components/TestsAdder'
-import { createNewTest, getTestFunctions, getOptimizationAlgorithms, getTestStatus, startTest, stopTest } from './lib/requests';
+import { createNewTest, getTestFunctions, getOptimizationAlgorithms, getTestStatus, startTest, stopTest, serverAddress } from './lib/requests';
 import { OptimizationAlgorithm } from './lib/OptimizationAlgorithm';
 import { Loader2 } from 'lucide-react';
 import { Button } from './components/ui/button';
@@ -90,7 +90,9 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
         <CardFooter className="flex justify-between">
           <Button variant="destructive">Delete</Button>
           <Button variant="outline">Download state</Button>
-          <Button variant="outline">Download report</Button>
+          <a href={`${serverAddress}/api/Tests/pdf-report/${id}`} target='_blank'>
+            <Button variant="outline">Download report</Button>
+          </a>
           { status === TestStatus.Created || status === TestStatus.Paused ?
             <Button onClick={runTest}>Run</Button> : status === TestStatus.Running ?
             <Button onClick={pauseTest}>Pause</Button> : null }

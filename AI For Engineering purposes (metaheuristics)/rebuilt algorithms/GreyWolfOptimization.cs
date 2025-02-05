@@ -104,11 +104,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void GenerateReport(string path)
         {
-            string filePath = Path.Combine(path, "GWO_PDF_Report.pdf");
-
             try
             {
-                using (PdfWriter writer = new PdfWriter(filePath))
+                using (PdfWriter writer = new PdfWriter(path))
                 {
                     using (PdfDocument pdf = new PdfDocument(writer))
                     {
@@ -141,7 +139,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                     }
                 }
 
-                Console.WriteLine($"PDF report generated successfully at: {filePath}");
+                Console.WriteLine($"PDF report generated successfully at: {path}");
             }
             catch (Exception ex)
             {

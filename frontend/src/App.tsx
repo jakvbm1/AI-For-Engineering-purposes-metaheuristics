@@ -56,21 +56,34 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
     setTests([...tests, ...t]);
   };
 
-  const testCards = tests.map(({ id, algorithmName, functionName, parameters, dimensions, status: status, currentIteration, iterations, fbest, xbest }, testIndex) => {
+  const checkStatus = async (id: string) => {
+    const newData = await getTestStatus(id);
+    const testIndex = tests.findIndex(t => t.id === id)
+    if (testIndex === undefined) return;
+    tests[testIndex] = { ...tests[testIndex], ...newData };
+    setTests([...tests]);
+    if (tests[testIndex].status === TestStatus.Running || tests[testIndex].status === TestStatus.Pausing) {
+      setTimeout(checkStatus, 1000);
+    }
+  }
+
+  const runTest = async (id: string) => {
+    await startTest(id);
+    await checkStatus(id);
+  }
+
+  const runAllTests = () => {
+    tests.forEach((t) => {
+      if (![TestStatus.Running, TestStatus.Pausing, TestStatus.Finished].includes(t.status)) {
+        runTest(t.id)
+      }
+    })
+  }
+
+  const testCards = tests.map(({ id, algorithmName, functionName, parameters, dimensions, status: status, currentIteration, iterations, fbest, xbest }) => {
     const algo = optimizationAlgorithms.find((a) => a.name === algorithmName)!;
     const parametersString = algo.paramInfo.map((param, index) => `${param.name}: ${parameters[index]}`).join(', ')
-    const checkStatus = async () => {
-      const newData = await getTestStatus(id);
-      tests[testIndex] = { ...tests[testIndex], ...newData };
-      setTests([...tests]);
-      if (tests[testIndex].status === TestStatus.Running || tests[testIndex].status === TestStatus.Pausing) {
-        setTimeout(checkStatus, 1000);
-      }
-    }
-    const runTest = async () => {
-      await startTest(id);
-      await checkStatus();
-    }
+    
     const pauseTest = () => stopTest(id)
 
     return (
@@ -88,7 +101,7 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
           <Progress value={(currentIteration * 100) / iterations} />
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button variant="destructive">Delete</Button>
+          {/* <Button variant="destructive">Delete</Button> */}
           <a href={`${serverAddress}/api/Tests/state/${id}`} target='_blank'>
             <Button variant="outline">Download state</Button>
           </a>
@@ -96,7 +109,7 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
             <Button variant="outline">Download report</Button>
           </a>
           { status === TestStatus.Created || status === TestStatus.Paused ?
-            <Button onClick={runTest}>Run</Button> : status === TestStatus.Running ?
+            <Button onClick={() => runTest(id)}>Run</Button> : status === TestStatus.Running ?
             <Button onClick={pauseTest}>Pause</Button> : null }
         </CardFooter>
       </Card>
@@ -111,7 +124,7 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
         addTests={addTests}
       />
 
-      <Button>Start all tests</Button>
+      <Button onClick={runAllTests}>Run all tests</Button>
 
       { testCards }
     </div>

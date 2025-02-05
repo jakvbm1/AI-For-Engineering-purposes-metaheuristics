@@ -70,6 +70,16 @@ namespace TestsAPI.Services
             test.Algorithm.pdfReportGenerator.GenerateReport(path);
             return File.ReadAllBytes(path);
         }
+        public byte[] GetState(Guid id)
+        {
+            var test = _tests.FirstOrDefault(t => t.Id == id);
+
+            if (test == null) throw new Exception("Test not found");
+
+            var path = Directory.GetCurrentDirectory() + "/state/" + id.ToString() + ".txt";
+            test.Algorithm.writer.SaveToFileStateOfAlgorithm(path);
+            return File.ReadAllBytes(path);
+        }
         private void RemoveOldTests(object state)
         {
             var now = DateTime.UtcNow;

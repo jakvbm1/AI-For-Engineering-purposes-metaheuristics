@@ -214,7 +214,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void SaveToFileStateOfAlgorithm(string path)
         {
-            using (StreamWriter sw = new StreamWriter($"{path}\\GWOState.txt"))
+            using (StreamWriter sw = new StreamWriter(path))
             {
                 sw.WriteLine(functionName);
                 sw.WriteLine(population);
@@ -394,7 +394,6 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 Xbest = alpha.Position;
                 Fbest = alpha.Fitness;
                 writer = new WolfStateWriter(population, dimensions, TargetIteration, CurrentIteration, nCall, Wolves, functionName);
-                writer.SaveToFileStateOfAlgorithm("./state/"); //tutaj tez path do tego folderu
             }
 
             NumberOfEvaluationFitnessFunction += population;

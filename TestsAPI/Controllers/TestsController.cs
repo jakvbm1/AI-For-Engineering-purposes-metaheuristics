@@ -90,6 +90,15 @@ namespace TestsAPI.Controllers
 
             return File(report, "application/pdf", "report.pdf");
         }
+
+        [HttpGet("state/{id}")]
+        public IActionResult GetState(Guid id)
+        {
+            var state = _testService.GetState(id);
+            if (state == null) return NotFound("Test nie istnieje.");
+
+            return File(state, "text/plain", "state.txt");
+        }
     }
 
     public class ResponseFunction

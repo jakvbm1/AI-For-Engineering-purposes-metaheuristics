@@ -89,7 +89,9 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button variant="destructive">Delete</Button>
-          <Button variant="outline">Download state</Button>
+          <a href={`${serverAddress}/api/Tests/state/${id}`} target='_blank'>
+            <Button variant="outline">Download state</Button>
+          </a>
           <a href={`${serverAddress}/api/Tests/pdf-report/${id}`} target='_blank'>
             <Button variant="outline">Download report</Button>
           </a>

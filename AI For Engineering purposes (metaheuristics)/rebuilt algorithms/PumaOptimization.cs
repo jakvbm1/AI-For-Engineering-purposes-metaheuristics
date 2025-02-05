@@ -109,11 +109,9 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void GenerateReport(string path)
         {
-            string filePath = Path.Combine(path, "PO_PDF_Report.pdf");
-
             try
             {
-                using (PdfWriter writer = new PdfWriter(filePath))
+                using (PdfWriter writer = new PdfWriter(path))
                 {
                     using (PdfDocument pdf = new PdfDocument(writer))
                     {
@@ -149,7 +147,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                     }
                 }
 
-                Console.WriteLine($"PDF report generated successfully at: {filePath}");
+                Console.WriteLine($"PDF report generated successfully at: {path}");
             }
             catch (Exception ex)
             {
@@ -241,7 +239,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
 
         public void SaveToFileStateOfAlgorithm(string path)
         {
-            using (StreamWriter sw = new StreamWriter($"{path}\\POState.txt"))
+            using (StreamWriter sw = new StreamWriter(path))
             {
                 sw.WriteLine(functionName);
                 sw.WriteLine(populationSize);
@@ -483,7 +481,6 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 fbest = Pumas[0].Fitness;
 
                 writer = new PumaStateWriter(CurrentIteration, population, dimensions, TargetIteration, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
-                writer.SaveToFileStateOfAlgorithm(""); //sciezka do foleru
             }
 
             Seq_Cost_Explore[0] = Math.Abs(InitialFBest - Costs_Explor[0]); // Eq(5)
@@ -617,7 +614,6 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms
                 }
 
                 writer = new PumaStateWriter(CurrentIteration, population, dimensions, TargetIteration, pf1, pf2, pf3, l, u, a, n_call, Pumas, functionName);
-                writer.SaveToFileStateOfAlgorithm(""); //sciezka do foleru
             }
             stringReportGenerator = new PumaTextReport(functionName, fbest, xbest, parameters);
             pdfReportGenerator = new PumaPDFReport(functionName, fbest, xbest, parameters);

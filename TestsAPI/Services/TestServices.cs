@@ -38,7 +38,7 @@ namespace TestsAPI.Services
             var test = _tests.FirstOrDefault(x => x.Id == id);
 
             if (test == null) throw new Exception("Test not found");
-            if (test.Status == TestStatus.Running || test.Status == TestStatus.Pausing) throw new Exception("Test is already running");
+            if (test.Status == TestStatus.Running || test.Status == TestStatus.Pausing) return test;
 
             test.Start();
 

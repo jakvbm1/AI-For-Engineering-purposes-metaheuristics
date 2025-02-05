@@ -63,7 +63,7 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
     tests[testIndex] = { ...tests[testIndex], ...newData };
     setTests([...tests]);
     if (tests[testIndex].status === TestStatus.Running || tests[testIndex].status === TestStatus.Pausing) {
-      setTimeout(checkStatus, 1000);
+      setTimeout(() => checkStatus(id), 1000);
     }
   }
 

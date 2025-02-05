@@ -22,7 +22,7 @@ namespace AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions
 
         public double[,] domain()
         {
-            double[,] dom = new double[,] { { -100, -100, -100 }, { 100, 100, 100 } };
+            double[,] dom = new double[,] { { 0.3, 0.3, 0.3 }, { 10, 10, 10 } };
             return dom;
         }
     }

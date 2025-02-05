@@ -1,7 +1,7 @@
 import './App.css'
 import { useEffect, useState } from 'react'
 import { TestsAdder } from './components/TestsAdder'
-import { createNewTest, getTestFunctions, getOptimizationAlgorithms } from './lib/requests';
+import { createNewTest, getTestFunctions, getOptimizationAlgorithms, getTestStatus, startTest, stopTest } from './lib/requests';
 import { OptimizationAlgorithm } from './lib/OptimizationAlgorithm';
 import { Loader2 } from 'lucide-react';
 import { Button } from './components/ui/button';
@@ -56,9 +56,22 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
     setTests([...tests, ...t]);
   };
 
-  const testCards = tests.map(({ id: Id, algorithmName: AlgorithmName, functionName: FunctionName, parameters: Parameters, dimensions: Dimensions, status: Status, currentIteration: CurrentIteration, iterations: Iterations }) => {
+  const testCards = tests.map(({ id: Id, algorithmName: AlgorithmName, functionName: FunctionName, parameters: Parameters, dimensions: Dimensions, status: Status, currentIteration: CurrentIteration, iterations: Iterations }, testIndex) => {
     const algo = optimizationAlgorithms.find((a) => a.name === AlgorithmName)!;
     const parameters = algo.paramInfo.map((param, index) => `${param.name}: ${Parameters[index]}`).join(', ')
+    const checkStatus = async () => {
+      const newData = await getTestStatus(Id);
+      tests[testIndex] = { ...tests[testIndex], ...newData };
+      setTests([...tests]);
+      if (tests[testIndex].status === TestStatus.Running || tests[testIndex].status === TestStatus.Pausing) {
+        setTimeout(checkStatus, 1000);
+      }
+    }
+    const runTest = async () => {
+      await startTest(Id);
+      await checkStatus();
+    }
+    const pauseTest = () => stopTest(Id)
 
     return (
       <Card className="w-full" key={Id}>
@@ -77,8 +90,8 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
           <Button variant="outline">Download state</Button>
           <Button variant="outline">Download report</Button>
           { Status === TestStatus.Created || Status === TestStatus.Paused ?
-            <Button>Run</Button> : Status === TestStatus.Running ?
-            <Button>Pause</Button> : null }
+            <Button onClick={runTest}>Run</Button> : Status === TestStatus.Running ?
+            <Button onClick={pauseTest}>Pause</Button> : null }
         </CardFooter>
       </Card>
     )

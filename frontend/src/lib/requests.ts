@@ -30,3 +30,18 @@ export async function createNewTest(newTest: NewTestData): Promise<Test> {
     currentIteration: 0
   }
 }
+
+export async function getTestStatus(id: string): Promise<Partial<Test>> {
+  const resp = await fetch(`${serverAddress}/api/Tests/status/${id}`)
+  return await resp.json();
+}
+
+export async function startTest(id: string): Promise<void> {
+  const resp = await fetch(`${serverAddress}/api/Tests/start/${id}`, { method: "POST" })
+  return await resp.json();
+}
+
+export async function stopTest(id: string): Promise<void> {
+  const resp = await fetch(`${serverAddress}/api/Tests/stop/${id}`, { method: "POST" })
+  return await resp.json();
+}

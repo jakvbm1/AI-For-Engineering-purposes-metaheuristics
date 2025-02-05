@@ -56,11 +56,11 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
     setTests([...tests, ...t]);
   };
 
-  const testCards = tests.map(({ id: Id, algorithmName: AlgorithmName, functionName: FunctionName, parameters: Parameters, dimensions: Dimensions, status: Status, currentIteration: CurrentIteration, iterations: Iterations }, testIndex) => {
-    const algo = optimizationAlgorithms.find((a) => a.name === AlgorithmName)!;
-    const parameters = algo.paramInfo.map((param, index) => `${param.name}: ${Parameters[index]}`).join(', ')
+  const testCards = tests.map(({ id, algorithmName, functionName, parameters, dimensions, status: status, currentIteration, iterations, fbest, xbest }, testIndex) => {
+    const algo = optimizationAlgorithms.find((a) => a.name === algorithmName)!;
+    const parametersString = algo.paramInfo.map((param, index) => `${param.name}: ${parameters[index]}`).join(', ')
     const checkStatus = async () => {
-      const newData = await getTestStatus(Id);
+      const newData = await getTestStatus(id);
       tests[testIndex] = { ...tests[testIndex], ...newData };
       setTests([...tests]);
       if (tests[testIndex].status === TestStatus.Running || tests[testIndex].status === TestStatus.Pausing) {
@@ -68,29 +68,31 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
       }
     }
     const runTest = async () => {
-      await startTest(Id);
+      await startTest(id);
       await checkStatus();
     }
-    const pauseTest = () => stopTest(Id)
+    const pauseTest = () => stopTest(id)
 
     return (
-      <Card className="w-full" key={Id}>
+      <Card className="w-full" key={id}>
         <CardHeader>
-          <CardTitle>{AlgorithmName} & {FunctionName} - {statusToString[Status]}</CardTitle>
-          <CardDescription>Dimensions: {Dimensions}, Iterations: {Iterations} {parameters}</CardDescription>
+          <CardTitle>{algorithmName} & {functionName} - {statusToString[status]}</CardTitle>
+          <CardDescription>Dimensions: {dimensions}, Iterations: {iterations} {parametersString}</CardDescription>
         </CardHeader>
         <CardContent>
+          { fbest !== undefined && <div>Fbest: {fbest}</div> }
+          { xbest !== undefined && <div>Xbest: {xbest.map((x) => x.toFixed(5)).join(", ")}</div> }
           <div className='relative w-full mb-[-19px] text-center z-10 text-blue-400 font-semibold'>
-            {CurrentIteration}/{Iterations}
+            {currentIteration}/{iterations}
           </div>
-          <Progress value={(CurrentIteration * 100) / Iterations} />
+          <Progress value={(currentIteration * 100) / iterations} />
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button variant="destructive">Delete</Button>
           <Button variant="outline">Download state</Button>
           <Button variant="outline">Download report</Button>
-          { Status === TestStatus.Created || Status === TestStatus.Paused ?
-            <Button onClick={runTest}>Run</Button> : Status === TestStatus.Running ?
+          { status === TestStatus.Created || status === TestStatus.Paused ?
+            <Button onClick={runTest}>Run</Button> : status === TestStatus.Running ?
             <Button onClick={pauseTest}>Pause</Button> : null }
         </CardFooter>
       </Card>

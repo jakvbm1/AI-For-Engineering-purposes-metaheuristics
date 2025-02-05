@@ -70,7 +70,7 @@ namespace TestsAPI.Controllers
             var test = _testService.GetStatus(id);
             if (test == null) return NotFound("Test nie istnieje.");
 
-            return Ok(new { test.Id, test.Status, test.Algorithm.CurrentIteration });
+            return Ok(new { test.Id, test.Status, test.Algorithm.CurrentIteration, test.Algorithm.Xbest, test.Algorithm.Fbest });
         }
 
         [HttpGet("report/{id}")]

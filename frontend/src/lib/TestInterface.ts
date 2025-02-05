@@ -7,6 +7,8 @@ export interface Test {
   dimensions: number;
   currentIteration: number;
   iterations: number;
+  xbest?: number[];
+  fbest?: number;
 }
 
 export enum TestStatus {

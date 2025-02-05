@@ -1,5 +1,5 @@
 export interface TestFunction {
-  Name: string;
-  IsMultiDimensional: boolean;
-  DefaultDimensions: number;
+  name: string;
+  isMultiDimensional: boolean;
+  defaultDimensions: number;
 }

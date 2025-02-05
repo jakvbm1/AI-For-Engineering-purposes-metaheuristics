@@ -2,54 +2,31 @@ import { OptimizationAlgorithm } from "./OptimizationAlgorithm";
 import { TestFunction } from "./TestFunction";
 import { NewTestData, Test, TestStatus } from "./TestInterface";
 
+const serverAddress = "http://127.0.0.1:5032"
+
 export async function getOptimizationAlgorithms(): Promise<OptimizationAlgorithm[]> {
-  return [
-    {
-      name: "Pink Wolf Optimizer",
-      paramsInfo: [
-        {
-          name: "α",
-          description: "Shade of wolf's fur",
-          lowerBoundary: -1.5,
-          upperBoundary: 200,
-          defaultValue: 10
-        },
-        {
-          name: "β",
-          description: "Wolf speed",
-          lowerBoundary: 0,
-          upperBoundary: 10,
-          defaultValue: 5
-        }
-      ]
-    },
-    {
-      name: "Grey Wolf Optimizer",
-      paramsInfo: []
-    },
-  ]
+  const resp = await fetch(`${serverAddress}/api/Tests/algorithms`, { headers: { "Content-Type": "application/json" } })
+  return await resp.json();
 }
 
 export async function getTestFunctions(): Promise<TestFunction[]> {
-  return [
-    {
-      Name: "RosenBrociek",
-      DefaultDimensions: 2,
-      IsMultiDimensional: true
-    },
-    {
-      Name: "Rasputin",
-      DefaultDimensions: 2,
-      IsMultiDimensional: false
-    }
-  ]
+  const resp = await fetch(`${serverAddress}/api/Tests/functions`, { headers: { "Content-Type": "application/json" } })
+  return await resp.json();
 }
 
 export async function createNewTest(newTest: NewTestData): Promise<Test> {
+  const options = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(newTest)
+  }
+  const resp = await fetch(`${serverAddress}/api/Tests/create`, options)
+  const { id } = await resp.json();
+
   return {
     ...newTest,
-    Id: Math.random().toString(),
-    Status: TestStatus.Created,
-    CurrentIteration: 0
+    id: id,
+    status: TestStatus.Created,
+    currentIteration: 0
   }
 }

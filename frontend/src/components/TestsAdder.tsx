@@ -40,14 +40,14 @@ export function TestsAdder({ algorithms, functions, addTests }: Props) {
     const newAlgo = algorithms.find((a) => a.name === v);
     setAlgorithm(newAlgo);
     if (!newAlgo) return;
-    setParams(newAlgo.paramsInfo.map(() => []))
+    setParams(newAlgo.paramInfo.map(() => []))
   }
 
   const onFunctionChange = (v: string) => {
-    const newFunction = functions.find((f) => f.Name === v);
+    const newFunction = functions.find((f) => f.name === v);
     setTestFunction(newFunction);
     if (!newFunction) return;
-    setDimensions(newFunction.IsMultiDimensional ? [] : [newFunction.DefaultDimensions])
+    setDimensions(newFunction.isMultiDimensional ? [] : [newFunction.defaultDimensions])
   }
 
   const handleAdd = () => {
@@ -68,11 +68,11 @@ export function TestsAdder({ algorithms, functions, addTests }: Props) {
     const newTests: NewTestData[] = paramsCombinations.map((p) => {
       const [dimensions, iterations, ...params] = p;
       return {
-        AlgorithmName: algorithm!.name,
-        FunctionName: testFunction!.Name,
-        Parameters: params,
-        Dimensions: dimensions,
-        Iterations: iterations,
+        algorithmName: algorithm!.name,
+        functionName: testFunction!.name,
+        parameters: params,
+        dimensions: dimensions,
+        iterations: iterations,
       }
     });
     addTests(newTests);
@@ -112,14 +112,14 @@ export function TestsAdder({ algorithms, functions, addTests }: Props) {
 
               <Label>
                 <p className='mb-1'>Test function</p>
-                <Select value={testFunction?.Name} onValueChange={onFunctionChange}>
+                <Select value={testFunction?.name} onValueChange={onFunctionChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a test function" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Test functions</SelectLabel>
-                      { functions.map((f) => <SelectItem key={f.Name} value={f.Name}>{f.Name}</SelectItem>) }
+                      { functions.map((f) => <SelectItem key={f.name} value={f.name}>{f.name}</SelectItem>) }
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -137,7 +137,7 @@ export function TestsAdder({ algorithms, functions, addTests }: Props) {
                     params={iterations}
                     setParams={(iter) => setIterations(iter.map((it) => Math.floor(it)))}
                   />
-                  { algorithm.paramsInfo.map((p, i) => {
+                  { algorithm.paramInfo.map((p, i) => {
                     return (
                       <ParamValuesPicker
                         key={i}
@@ -222,7 +222,7 @@ interface DimensionsPickerProps {
   setDimensions: (d: number[]) => void;
 }
 
-function DimensionsPicker({ testFunction: { Name, DefaultDimensions, IsMultiDimensional }, dimensions, setDimensions }: DimensionsPickerProps) {
+function DimensionsPicker({ testFunction: { name: Name, defaultDimensions: DefaultDimensions, isMultiDimensional: IsMultiDimensional }, dimensions, setDimensions }: DimensionsPickerProps) {
   const [inputVal, setInputVal] = useState(DefaultDimensions);
 
   const valueButtons = dimensions.map((value, index) => {

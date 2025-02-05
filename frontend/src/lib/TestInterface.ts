@@ -1,12 +1,12 @@
 export interface Test {
-  Id: string;
-  Status: TestStatus;
-  AlgorithmName: string;
-  FunctionName: string;
-  Parameters: number[];
-  Dimensions: number;
-  CurrentIteration: number;
-  Iterations: number;
+  id: string;
+  status: TestStatus;
+  algorithmName: string;
+  functionName: string;
+  parameters: number[];
+  dimensions: number;
+  currentIteration: number;
+  iterations: number;
 }
 
 export enum TestStatus {
@@ -17,7 +17,7 @@ export enum TestStatus {
   Finished = 5
 }
 
-export type NewTestData = Omit<Test, "Id" | "Status" | "CurrentIteration">;
+export type NewTestData = Omit<Test, "id" | "status" | "currentIteration">;
 
 export const statusToString: { [status in TestStatus]: string } = {
   [TestStatus.Created]: "Created",

@@ -56,9 +56,9 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
     setTests([...tests, ...t]);
   };
 
-  const testCards = tests.map(({ Id, AlgorithmName, FunctionName, Parameters, Dimensions, Status, CurrentIteration, Iterations }) => {
+  const testCards = tests.map(({ id: Id, algorithmName: AlgorithmName, functionName: FunctionName, parameters: Parameters, dimensions: Dimensions, status: Status, currentIteration: CurrentIteration, iterations: Iterations }) => {
     const algo = optimizationAlgorithms.find((a) => a.name === AlgorithmName)!;
-    const parameters = algo.paramsInfo.map((param, index) => `${param.name}: ${Parameters[index]}`).join(', ')
+    const parameters = algo.paramInfo.map((param, index) => `${param.name}: ${Parameters[index]}`).join(', ')
 
     return (
       <Card className="w-full" key={Id}>

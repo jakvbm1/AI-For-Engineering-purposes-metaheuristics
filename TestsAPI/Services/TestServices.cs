@@ -2,6 +2,7 @@
 using AI_For_Engineering_purposes__metaheuristics_.Interfaces;
 using AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms;
 using AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 
 
@@ -10,6 +11,7 @@ namespace TestsAPI.Services
     public class TestServices
     {
         private readonly List<Test> _tests = [];
+        private readonly Mutex _testsMutex = new();
 
         public Test CreateTest(string algorithmName, string functionName, double[] parameters, int dimensions, int iterations, string state)
         {
@@ -21,7 +23,10 @@ namespace TestsAPI.Services
             algorithm.TargetIteration = iterations;
             function.Dimensions = dimensions;
             var test = new Test{ Algorithm = algorithm, Function = function, Parameters = parameters };
+
+            _testsMutex.WaitOne();
             _tests.Add(test);
+            _testsMutex.ReleaseMutex();
 
 
             if (!string.IsNullOrEmpty(state))
@@ -74,7 +79,7 @@ namespace TestsAPI.Services
         {
             var test = _tests.FirstOrDefault(t => t.Id == id);
 
-            if (test == null) throw new Exception("Test not found");
+            if (test == null) return [];
 
             var path = Directory.GetCurrentDirectory() + "/reports/" + id.ToString() + ".pdf";
             test.Algorithm.pdfReportGenerator.GenerateReport(path);

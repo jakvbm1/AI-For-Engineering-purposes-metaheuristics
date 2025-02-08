@@ -118,6 +118,7 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
     )
   })
 
+  const canRunAnyTest = tests.some(({ status }) => status === TestStatus.Created || status === TestStatus.Paused)
   const reportableIds = tests.filter((t) => t.status !== TestStatus.Created).map((t) => t.id);
   const combinedReportUrl = `${serverAddress}/api/Tests/pdf-report-combined/${reportableIds.join(',')}`;
 
@@ -133,7 +134,7 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
         <Button disabled={reportableIds.length === 0} variant="outline" className='w-full'>Download combined report</Button>
       </a>
 
-      <Button onClick={runAllTests}>Run all tests</Button>
+      <Button disabled={!canRunAnyTest} onClick={runAllTests}>Run all tests</Button>
 
       { testCards }
     </div>

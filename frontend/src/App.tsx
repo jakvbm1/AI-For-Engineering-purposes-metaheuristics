@@ -118,6 +118,9 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
     )
   })
 
+  const reportableIds = tests.filter((t) => t.status !== TestStatus.Created).map((t) => t.id);
+  const combinedReportUrl = `${serverAddress}/api/Tests/pdf-report-combined/${reportableIds.join(',')}`;
+
   return (
     <div className='w-[40vw] flex flex-col gap-4 flex-1'>
       <TestsAdder
@@ -125,6 +128,10 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
         functions={fitnessFunctions}
         addTests={addTests}
       />
+
+      <a href={combinedReportUrl} target='_blank' className='block'>
+        <Button disabled={reportableIds.length === 0} variant="outline" className='w-full'>Download combined report</Button>
+      </a>
 
       <Button onClick={runAllTests}>Run all tests</Button>
 

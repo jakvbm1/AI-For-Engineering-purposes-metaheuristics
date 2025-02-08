@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TestsAPI.Model;
 using TestsAPI.Services;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace TestsAPI.Controllers
 {
@@ -86,6 +87,17 @@ namespace TestsAPI.Controllers
         public IActionResult GetPdfReport(Guid id)
         {
             var report = _testService.GetPdfReport(id);
+            if (report == null) return NotFound("Test nie istnieje.");
+
+            return File(report, "application/pdf", "report.pdf");
+        }
+
+        [HttpGet("pdf-report-combined/{ids}")]
+        public IActionResult GetPdfReport(string ids)
+        {
+            var guids = ids.Split(',').Select(Guid.Parse).ToArray();
+
+            var report = _testService.GetCombinedPdfReport(guids);
             if (report == null) return NotFound("Test nie istnieje.");
 
             return File(report, "application/pdf", "report.pdf");

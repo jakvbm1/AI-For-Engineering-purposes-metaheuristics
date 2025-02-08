@@ -3,6 +3,8 @@ using AI_For_Engineering_purposes__metaheuristics_.Interfaces;
 using AI_For_Engineering_purposes__metaheuristics_.rebuilt_algorithms;
 using AI_For_Engineering_purposes__metaheuristics_.rebuilt_functions;
 using Microsoft.AspNetCore.Http.HttpResults;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
+using AI_For_Engineering_purposes__metaheuristics_;
 
 
 
@@ -84,6 +86,28 @@ namespace TestsAPI.Services
             var path = Directory.GetCurrentDirectory() + "/reports/" + id.ToString() + ".pdf";
             test.Algorithm.pdfReportGenerator.GenerateReport(path);
             return File.ReadAllBytes(path);
+        }
+
+        public byte[] GetCombinedPdfReport(Guid[] ids)
+        {
+            var name = "combined-" + new Guid().ToString();
+            var txt_path = Directory.GetCurrentDirectory() + "/reports/" + name + ".txt";
+            var pdf_path = Directory.GetCurrentDirectory() + "/reports/" + name + ".pdf";
+
+            var txt = File.CreateText(txt_path);
+
+            foreach (var id in ids)
+            {
+                var test = _tests.FirstOrDefault(t => t.Id == id);
+
+                if (test == null) return [];
+
+                txt.WriteLine(test.Algorithm.stringReportGenerator.ReportString);
+            }
+
+            txt.Close();
+            TxtToPdfReportConverter.GeneratePdfFromTxt(pdf_path, txt_path);
+            return File.ReadAllBytes(pdf_path);
         }
         public byte[] GetState(Guid id)
         {

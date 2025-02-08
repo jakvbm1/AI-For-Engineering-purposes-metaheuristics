@@ -80,7 +80,7 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
     })
   }
 
-  const testCards = tests.map(({ id, algorithmName, functionName, parameters, dimensions, status: status, currentIteration, iterations, fbest, xbest }) => {
+  const testCards = tests.map(({ id, algorithmName, functionName, parameters, dimensions, status, currentIteration, iterations, fbest, xbest }) => {
     const algo = optimizationAlgorithms.find((a) => a.name === algorithmName)!;
     const parametersString = algo.paramInfo.map((param, index) => `${param.name}: ${parameters[index]}`).join(', ')
     
@@ -93,8 +93,8 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
           <CardDescription>Dimensions: {dimensions}, Iterations: {iterations}, {parametersString}</CardDescription>
         </CardHeader>
         <CardContent>
-          { fbest !== undefined && <div>Fbest: {fbest}</div> }
-          { xbest !== undefined && <div>Xbest: {xbest.map((x) => x.toFixed(5)).join(", ")}</div> }
+          { (fbest ?? false) && <div>Fbest: {fbest}</div> }
+          { (xbest ?? false) && <div>Xbest: {xbest!.map((x) => x.toFixed(5)).join(", ")}</div> }
           <div className='relative w-full mb-[-19px] text-center z-10 text-blue-400 font-semibold'>
             {currentIteration}/{iterations}
           </div>
@@ -102,12 +102,14 @@ function LoadedApp({ fitnessFunctions, optimizationAlgorithms }: AppData) {
         </CardContent>
         <CardFooter className="flex justify-between">
           {/* <Button variant="destructive">Delete</Button> */}
-          <a href={`${serverAddress}/api/Tests/state/${id}`} target='_blank'>
-            <Button variant="outline">Download state</Button>
-          </a>
-          <a href={`${serverAddress}/api/Tests/pdf-report/${id}`} target='_blank'>
-            <Button variant="outline">Download report</Button>
-          </a>
+          { status !== TestStatus.Created && <>
+            <a href={`${serverAddress}/api/Tests/state/${id}`} target='_blank'>
+              <Button variant="outline">Download state</Button>
+            </a>
+            <a href={`${serverAddress}/api/Tests/pdf-report/${id}`} target='_blank'>
+              <Button variant="outline">Download report</Button>
+            </a>
+          </>}
           { status === TestStatus.Created || status === TestStatus.Paused ?
             <Button onClick={() => runTest(id)}>Run</Button> : status === TestStatus.Running ?
             <Button onClick={pauseTest}>Pause</Button> : null }

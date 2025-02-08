@@ -216,7 +216,7 @@ function ParamValuesPicker({ paramInfo: { name, description, defaultValue, lower
               min={lowerBoundary}
               max={upperBoundary}
               value={inputVal}
-              onChange={(e) => setInputVal(parseInt(e.target.value))}
+              onChange={(e) => setInputVal(parseFloat(e.target.value))}
               onClick={e => e.stopPropagation()}
               className="text-black h-6 w-16"
             />
